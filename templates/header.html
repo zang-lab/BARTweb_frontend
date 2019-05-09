@@ -1,0 +1,65 @@
+{% block header %}
+  <header>
+    <!-- Fixed navbar -->
+    <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
+      <a class="navbar-brand" href="/">BART</a>
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarCollapse">
+        <ul class="navbar-nav mr-auto">
+
+          <!-- Home link -->
+          <li class="nav-item active">
+            <a class="nav-link" href="/">Home</a>
+          </li>
+
+          <!-- Result redirection link -->
+          <li class="nav-item active">
+            <form class="nav-item active" id="navbarForm" method=post enctype=multipart/form-data>
+                <input class="form-control" type="hidden" id="navbar_input" name="navbar_button" value="" />
+                <a class="nav-link" href="#" onclick="navbar_pop()">Result</a>
+            </form>
+          </li>
+  
+          <!-- Help link -->
+          <li class="nav-item active">
+            <a class="nav-link" href="/help">Help</a>
+          </li>
+
+          <!-- Contact link -->
+          <li class="nav-item active">
+              <a class="nav-link" href="/contact">Contact</a>
+            </li>
+          
+          <!-- Zanglab link -->
+          <li class="nav-item">
+            <a class="nav-link" target="_new" href="http://faculty.virginia.edu/zanglab/">Zanglab</a>
+          </li>
+
+        </ul>
+      </div>
+    </nav>
+  </header>
+  
+
+  <!-- JS script on retrieving the result by the Key -->
+  <script type="text/javascript">
+    function navbar_pop() {
+        var navbarResult = document.getElementById('navbar_input');
+        var key = prompt("Please enter the key.", "");
+        if (key == "") {
+          navbarResult.value = "";
+          alert("You need to enter your key.");
+        }
+        else if (key == null){
+
+        } 
+        else {
+          navbarResult.value = key;
+          document.getElementById('navbarForm').submit();  // get the value of element in "navbarForm"
+        }
+        
+    }
+  </script>
+{% endblock %}

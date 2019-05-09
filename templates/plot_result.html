@@ -1,0 +1,452 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>BART plot</title>
+
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.3.1.js" integrity="sha256-2Kok7MbOyxpgUVvAk/HJ2jigOSYS2auK4Pfzbm7uH60=" crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js" integrity="sha256-T0Vest3yCU7pafRw9r+settMBX6JkKN06dqBnpQ8d30=" crossorigin="anonymous"></script>
+
+    <!-- Bootstrap core CSS -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.2/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- D3 Plot -->
+    <script src="https://d3js.org/d3.v5.min.js"></script>
+
+    <script src="https://cdn.rawgit.com/eligrey/canvas-toBlob.js/f1a01896135ab378aa5c0118eadd81da55e698d8/canvas-toBlob.js"></script>
+	<script src="https://cdn.rawgit.com/eligrey/FileSaver.js/e9d941381475b5df8b7d7691013401e171014e89/FileSaver.min.js"></script>
+
+    <!-- change all the fonts inside class='container' -->
+    <style>
+    .container {
+        font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    }
+    </style>
+
+  </head>
+
+  <body class="bg-light">
+    <div class="container">
+      <h3 id="resultTitle" class="mb-3"></h4>
+      <!-- <p id="resultFlag">The plots are being generated, please come later. </p> -->
+      <div class="row">
+        <div class="col-md-6 mb-3">
+          <p id="roc">AUC Cumulative Distribution</p>
+          <svg id="cumulative" width="300" height="300"></svg>
+          <button id="cumulativeButton">download PNG</button>
+        </div>
+
+        <div class="col-md-6 mb-3">
+          <p id="rankScore">TF Prediction Ranks</p>
+          <svg id="rankdot" width="300" height="300"></svg>
+          <button id="rankdotButton">download PNG</button>
+        </div>
+      </div>
+    </div>
+
+    <script type="text/javascript">
+      function fileExists(file_url) {
+        var http = new XMLHttpRequest();
+        http.open('HEAD', file_url, false);
+        http.send();
+        
+        return http.status != 404;
+      }
+    </script>
+
+    <script type="text/javascript">
+        // =============test d3.js below===============
+        var plotResult = {{ plotResults|tojson }};
+        document.getElementById("resultTitle").innerHTML = plotResult.tf_name + " Plots";
+        
+        // Set the dimensions of the canvas / graph
+        var margin = { top: 10, right: 10, bottom: 50, left: 50 }
+            , width = 300
+            , height = 300;
+
+        // draw cumulative distribution plot
+        var lineData = plotResult.cumulative_data;
+        // Set the ranges
+        var xCumulative = d3.scaleLinear()
+            .domain([0, 1])
+            .range([margin.left, width - margin.right]);
+        var yCumulative = d3.scaleLinear()
+            .domain([-0.05, 1.05])
+            .range([height - margin.bottom, margin.top]);
+
+        // Define the axes
+        var xCumulativeAxis = d3.axisBottom()
+            .scale(xCumulative)
+            .ticks(3);
+        var yCumulativeAxis = d3.axisLeft()
+            .scale(yCumulative)
+            .ticks(3);
+
+        // background line and TF line
+        var lineBG = d3.line()
+            .curve(d3.curveBasis)
+            .x(function(d) { return xCumulative(d.x); })
+            .y(function(d) { return yCumulative(d.bgY); });
+        var lineTF = d3.line()
+            .curve(d3.curveBasis)
+            .x(function(d) { return xCumulative(d.x); })
+            .y(function(d) { return yCumulative(d.tfY); });
+
+        var cumulative = d3.select('#cumulative');
+        // add background
+        cumulative.append("rect") // background color
+            .attr("width", "100%")
+            .attr("height", "100%")
+            .attr("fill", "white");
+
+        cumulative.append("line") // plot border
+            .attr("x1", margin.left)
+            .attr("x2", width-margin.right)
+            .attr("y1", margin.top+0.5)
+            .attr("y2", margin.top+0.5)
+            .style("fill", "none")
+            .style("stroke", "black")
+            .style("stroke-width", 1);
+        
+        cumulative.append("line") // plot border
+            .attr("x1", width-margin.right+0.5)
+            .attr("x2", width-margin.right+0.5)
+            .attr("y1", margin.top)
+            .attr("y2", height-margin.bottom)
+            .style("fill", "none")
+            .style("stroke", "black")
+            .style("stroke-width", 1);
+
+        // add line
+        cumulative.append('path')
+            .data([lineData])
+            .attr("class", "line")
+            .attr("d", lineBG)
+            .attr("fill", "none")
+            .attr("stroke", "grey")
+            .attr("stroke-width", 2);
+        cumulative.append('path')
+            .data([lineData])
+            .attr("class", "line")
+            .attr("d", lineTF)
+            .attr("fill", "none")
+            .attr("stroke", "red")
+            .attr("stroke-width", 2);
+        cumulative.append('g')
+            .attr('class', 'x axis')
+            .attr('transform', 'translate(0,' + (height - margin.bottom) + ')')
+            .call(xCumulativeAxis);
+        cumulative.append("text")
+          .attr("transform",
+                "translate(" + ((width - margin.right + margin.left)/2) + " ," +
+                              (height - 10) + ")")
+          .style("text-anchor", "middle")
+          .text("AUC");
+        cumulative.append('g')
+            .attr('class', 'y axis')
+            .attr('transform', 'translate(' + (margin.left) + ',0)')
+            .call(yCumulativeAxis);
+        cumulative.append("text")
+            .attr("transform", "rotate(-90)")
+            .attr("y", 0)
+            .attr("x",0 - ((height - margin.bottom + margin.top) / 2))
+            .attr("dy", "1em")
+            .style("text-anchor", "middle")
+            .text("Cumulative Fraction");
+
+        // add legend
+        var cumulative_color_hash = {  
+              0 : [plotResult.tf_name, "red"],
+              1 : ["Background", "grey"],
+        };
+        for (var i = 0; i < Object.keys(cumulative_color_hash).length; i++) {
+            cumulative.append("line")
+                    .attr("x1", margin.left + 10)
+                    .attr("y1", i*25 + 25)
+                    .attr("x2", margin.left + 35)
+                    .attr("y2", i*25 + 25)
+                    .attr("stroke-width", 2)
+                    .attr("stroke", cumulative_color_hash[String(i)][1]);
+
+            cumulative.append("text")
+                    .attr("x", margin.left + 40)
+                    .attr("y", i*25 + 30)
+                    .attr("height",10)
+                    .attr("width",20)
+                    .style("fill", cumulative_color_hash[String(i)][1])
+                    .text(cumulative_color_hash[String(i)][0]);
+        }
+
+        // Set-up the export button
+        d3.select('#cumulativeButton').on('click', function(){
+          var svgString = getSVGString(cumulative.node());
+          svgString2Image( svgString, width*3, height*3, 'png', save ); // passes Blob and filesize String to the callback
+
+          function save( dataBlob, filesize ){
+            saveAs( dataBlob, plotResult.tf_name + '_cumulative_fraction.png' ); // FileSaver.js function
+          }
+        });
+
+        // draw rankdot plot
+        var rankdotData = plotResult.rankdot_data;
+        var rankdotTF = plotResult.rankdot_TF;
+        // Set the ranges
+        var xRankdot = d3.scaleLinear()
+            .domain([-30, rankdotData.length + 20])
+            .range([margin.left, width - margin.right]);
+        var yRankdot = d3.scaleLinear()
+            .domain([-0.2, d3.max(rankdotData, function(d) { return d.rank_y; }) + 0.2 ])
+            .range([height - margin.bottom, margin.top]);
+
+        // Define the axes
+        var xRankdotAxis = d3.axisBottom()
+            .scale(xRankdot)
+            .tickValues([1,rankdotData.length]);
+        var yRankdotAxis = d3.axisLeft()
+            .scale(yRankdot)
+            .ticks(3);
+
+        var rankdot = d3.select('#rankdot');
+        rankdot.append("rect")
+          .attr("width", "100%")
+          .attr("height", "100%")
+          .attr("fill", "white");
+
+        rankdot.append("line") // plot border
+            .attr("x1", margin.left)
+            .attr("x2", width-margin.right)
+            .attr("y1", margin.top+0.5)
+            .attr("y2", margin.top+0.5)
+            .style("fill", "none")
+            .style("stroke", "black")
+            .style("stroke-width", 1);
+        
+        rankdot.append("line") // plot border
+            .attr("x1", width-margin.right+0.5)
+            .attr("x2", width-margin.right+0.5)
+            .attr("y1", margin.top)
+            .attr("y2", height-margin.bottom)
+            .style("fill", "none")
+            .style("stroke", "black")
+            .style("stroke-width", 1);
+
+        // add the tooltip area to the webpage
+        var tooltip = d3.select("body").append("div")
+              .attr("class", "tooltip")
+              .style("opacity", 0);
+        // Add the scatterplot
+        rankdot.selectAll("dot")
+            .data(rankdotData)
+            .enter().append("circle")
+            .attr("stroke", "grey")
+            .attr("fill", "grey")
+            .attr("r", 2)
+            .attr("cx", function(d) { return xRankdot(d.rank_x); })
+            .attr("cy", function(d) { return yRankdot(d.rank_y); })
+            .on("mouseover", function(d) {
+                tooltip.transition()
+                    .duration(200)
+                    .style("opacity", .9);
+                tooltip.html(d["tf_name"]) // Others hover text
+                    .style("left", (d3.event.pageX + 10) + "px")
+                    .style("top", (d3.event.pageY - 13) + "px");
+            })
+            .on("mouseout", function(d) {
+                tooltip.transition()
+                    .duration(500)
+                    .style("opacity", 0);
+            });
+
+        rankdot.selectAll("dot")
+            .data(rankdotTF)
+            .enter().append("circle")
+            .attr("stroke", "red")
+            .attr("fill", "red")
+            .attr("r", 5)
+            .attr("cx", function(d) { return xRankdot(d.rank_x); })
+            .attr("cy", function(d) { return yRankdot(d.rank_y); })
+            .on("mouseover", function(d) {
+                tooltip.transition()
+                    .duration(200)
+                    .style("opacity", .9);
+                tooltip.html(plotResult.tf_name) // TF hover text
+                    .style("left", (d3.event.pageX + 10) + "px")
+                    .style("top", (d3.event.pageY - 13) + "px");
+            })
+            .on("mouseout", function(d) {
+                tooltip.transition()
+                    .duration(500)
+                    .style("opacity", 0);
+            });;
+
+        rankdot.append('g')
+            .attr('class', 'x axis')
+            .attr('transform', 'translate(0,' + (height - margin.bottom) + ')')
+            .call(xRankdotAxis);
+        rankdot.append("text")  
+          .attr("transform",
+                "translate(" + ((width - margin.right + margin.left)/2) + " ," +
+                              (height - 10) + ")")
+          .style("text-anchor", "middle")
+          .text("TF Rank");
+        rankdot.append('g')
+            .attr('class', 'y axis')
+            .attr('transform', 'translate(' + (margin.left) + ',0)')
+            .call(yRankdotAxis);
+        rankdot.append("text")
+            .attr("transform", "rotate(-90)")
+            .attr("y", 0)
+            .attr("x",0 - ((height - margin.bottom + margin.top) / 2))
+            .attr("dy", "1em")
+            .style("text-anchor", "middle")
+            .text("-log10 (p)");
+
+        // add legend
+        var rankdot_color_hash = {  
+              0 : [plotResult.tf_name, "red"],
+              1 : ["Others", "grey"],
+        };
+        for (var i = 0; i < Object.keys(rankdot_color_hash).length; i++) {
+            if (i == 0) {
+                rankdot.append("circle")
+                        .attr("cx", width - margin.right - 70)
+                        .attr("cy", i*25 + 25)
+                        .attr("r",5)
+                        .attr("stroke", rankdot_color_hash[String(i)][1])
+                        .style("fill", rankdot_color_hash[String(i)][1]);
+            } else {
+                rankdot.append("circle")
+                          .attr("cx", width - margin.right - 70)
+                          .attr("cy", i*25 + 25)
+                          .attr("r",2)
+                          .attr("stroke", rankdot_color_hash[String(i)][1])
+                          .style("fill", rankdot_color_hash[String(i)][1]);
+            }
+
+            rankdot.append("text")
+                    .attr("x", width - margin.right - 60)
+                    .attr("y", i*25 + 30)
+                    .attr("height",10)
+                    .attr("width",20)
+                    .style("fill", rankdot_color_hash[String(i)][1])
+                    .text(rankdot_color_hash[String(i)][0]);
+        }
+
+        // Set-up the export button
+        d3.select('#rankdotButton').on('click', function(){
+          var svgString = getSVGString(rankdot.node());
+          svgString2Image( svgString, width*3, height*3, 'png', save ); // passes Blob and filesize String to the callback
+
+          function save( dataBlob, filesize ){
+            saveAs( dataBlob, plotResult.tf_name + '_ranked_dot.png' ); // FileSaver.js function
+          }
+        });
+
+        // for downloading pictures
+        function getSVGString( svgNode ) {
+            svgNode.setAttribute('xlink', 'http://www.w3.org/1999/xlink');
+            var cssStyleText = getCSSStyles( svgNode );
+            appendCSS( cssStyleText, svgNode );
+
+            var serializer = new XMLSerializer();
+            var svgString = serializer.serializeToString(svgNode);
+            svgString = svgString.replace(/(\w+)?:?xlink=/g, 'xmlns:xlink='); // Fix root xlink without namespace
+            svgString = svgString.replace(/NS\d+:href/g, 'xlink:href'); // Safari NS namespace fix
+
+            return svgString;
+
+            function getCSSStyles( parentElement ) {
+              var selectorTextArr = [];
+
+              // Add Parent element Id and Classes to the list
+              selectorTextArr.push( '#'+parentElement.id );
+              for (var c = 0; c < parentElement.classList.length; c++)
+                  if ( !contains('.'+parentElement.classList[c], selectorTextArr) )
+                    selectorTextArr.push( '.'+parentElement.classList[c] );
+
+              // Add Children element Ids and Classes to the list
+              var nodes = parentElement.getElementsByTagName("*");
+              for (var i = 0; i < nodes.length; i++) {
+                var id = nodes[i].id;
+                if ( !contains('#'+id, selectorTextArr) )
+                  selectorTextArr.push( '#'+id );
+
+                var classes = nodes[i].classList;
+                for (var c = 0; c < classes.length; c++)
+                  if ( !contains('.'+classes[c], selectorTextArr) )
+                    selectorTextArr.push( '.'+classes[c] );
+              }
+
+              // Extract CSS Rules
+              var extractedCSSText = "";
+              for (var i = 0; i < document.styleSheets.length; i++) {
+                var s = document.styleSheets[i];
+                try {
+                    if(!s.cssRules) continue;
+                } catch( e ) {
+                      if(e.name !== 'SecurityError') throw e; // for Firefox
+                      continue;
+                    }
+                var cssRules = s.cssRules;
+                for (var r = 0; r < cssRules.length; r++) {
+                  if ( contains( cssRules[r].selectorText, selectorTextArr ) )
+                    extractedCSSText += cssRules[r].cssText;
+                }
+              }
+              return extractedCSSText;
+
+              function contains(str,arr) {
+                return arr.indexOf( str ) === -1 ? false : true;
+              }
+
+            }
+
+            function appendCSS( cssText, element ) {
+              var styleElement = document.createElement("style");
+              styleElement.setAttribute("type","text/css"); 
+              styleElement.innerHTML = cssText;
+              var refNode = element.hasChildNodes() ? element.children[0] : null;
+              element.insertBefore( styleElement, refNode );
+            }
+          }
+
+          function svgString2Image( svgString, width, height, format, callback ) {
+            var format = format ? format : 'png';
+            var imgsrc = 'data:image/svg+xml;base64,'+ btoa( unescape( encodeURIComponent( svgString ) ) ); // Convert SVG string to data URL
+            var canvas = document.createElement("canvas");
+            var context = canvas.getContext("2d");
+
+            canvas.width = width;
+            canvas.height = height;
+
+            var image = new Image();
+            image.onload = function() {
+              context.clearRect ( 0, 0, width, height );
+              context.drawImage(image, 0, 0, width, height);
+
+              canvas.toBlob( function(blob) {
+                var filesize = Math.round( blob.length/1024 ) + ' KB';
+                if ( callback ) callback( blob, filesize );
+              });
+            };
+            image.src = imgsrc;
+          }
+
+    </script>
+
+
+
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script>window.jQuery || document.write('<script src="../../assets/js/vendor/jquery-slim.min.js"><\/script>')</script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.2/js/bootstrap.min.js" integrity="sha384-o+RDsa0aLu++PJvFqy8fFScvbHFLtbvScb8AjopnFD+iEQ7wo/CG0xlczd+2O/em" crossorigin="anonymous"></script>
+    <script src="{{ url_for('static', filename='holder.min.js') }}"></script>
+  </body>
+</html>
