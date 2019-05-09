@@ -20,3 +20,4 @@ notifications:
     on_failure: always
     recipients:
     - nmagee@virginia.edu
+    - wm9tr@virginia.edu
