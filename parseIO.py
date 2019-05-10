@@ -11,26 +11,32 @@ import scipy
 from scipy import special
 
 import utils
-import marge_bart
 from utils import model_logger as logger
 
-PROJECT_DIR = os.path.dirname(__file__)
+PROJECT_DIR = os.path.dirname(os.path.realpath(__file__))
 
-# generate key according to e-mail or jobname
+# ===  process user input part ===
 def generate_user_key(username, jobname):
+    '''
+    generate key according to e-mail or jobname
+    '''
+
     logger.info("Init project: generate key ...")
 
     import time
-    tstamp = time.time()
+    tstamp = time.time() # userkey: name_timestamp
     user_mail = username
 
-    if username == '' and jobname == '':
-        logger.info("Init project: user does not input e-mail or jobname...")
-        username = 'anonymous'
-    if jobname == '' and username != '':  # e-mail
-        logger.info("Init project: user e-mail is {}...".format(username))
-        username = username.split('@')[0]
-    if jobname != '': # job name in first priority
+    # if jobname is null    
+    if jobname == '':
+        if username == '': 
+            logger.info("Init project: user does not input e-mail or jobname...")
+            username = 'anonymous'
+        else:
+            logger.info("Init project: user e-mail is {}...".format(username))
+            username = username.split('@')[0]
+    # if jobname is not null, generate key according to jobname
+    else: 
         logger.info("Init project: user jobname is {}...".format(jobname))
         username = jobname.replace(' ', '')  # get rid of spaces
     key = username + '_' + str(tstamp)
@@ -40,42 +46,49 @@ def generate_user_key(username, jobname):
     # send key to user's e-mail	
     if username != "":	
         logger.info("Init project: send e-mail to {} for {}".format(user_mail, key))	
-        send_flag, send_msg = utils.send_user_key(user_mail, key, 'Submit')	
+        send_flag, send_msg = utils.send_email(user_mail, key, 'Submit')	
         if send_flag:	
             logger.info("Init project: " + send_msg)	
         else:	
             logger.error("Init project:" + send_msg)
+    else:
+        logger.error("Init project: username is null")
 
     return key
 
 def init_project_path(user_key):
+    '''
+    create project directories
+    '''
+
     logger.info("Init project: init project path for {}...".format(user_key))
 
     user_path = os.path.join(PROJECT_DIR, 'usercase/' + user_key)
     user_upload_path = os.path.join(user_path, 'upload')
     user_download_path = os.path.join(user_path, 'download')
     user_log_path = os.path.join(user_path, 'log')
-    bart_output_path = os.path.join(user_download_path, 'bart_output')
 
     utils.create_dir(user_path)
     utils.create_dir(user_upload_path)
     utils.create_dir(user_download_path)
     utils.create_dir(user_log_path)
-    utils.create_dir(bart_output_path)
 
-    # create the log file in docker	
+    # create an empty log file 
     user_log_file_path = os.path.join(user_log_path, 'mb_pipe.log')	
     if not os.path.exists(user_log_file_path):	
         with open(user_log_file_path, 'w'): pass
 
     logger.info("Init project: send user key to Amazon SQS...")
-    logger.info("Init project: add user to user_queue.yaml...")
-    utils.send_sqs_message(user_key)
+    # utils.send_sqs_message(user_key)  # TODO: uncomment for online testing
 
     return user_path
 
 
 def init_user_config(user_path, user_data):
+    '''
+    dump data into user.config
+    '''
+
     logger.info("Save data: save data to user.config...")
     logger.info(user_data)
 
@@ -86,6 +99,11 @@ def init_user_config(user_path, user_data):
 
 
 def get_user_data(user_key):
+    '''
+    load data from user.config
+
+    '''
+
     logger.info("Get data: get data from user.config for {}...".format(user_key))
 
     user_path = os.path.join(PROJECT_DIR, 'usercase/' + user_key)
@@ -106,11 +124,25 @@ def is_user_key_exists(user_key):
     return os.path.exists(dest_path)
 
 
+def prepare_bart(user_data):
+    '''
+    write a shell for running bart
+
+
+    #TODO: what Yifan should do.. run a shell script according to user.config data
+    bart geneset -i project_dir/usercase/***/upload -s hg38/mm10 -o project_dir/usercase/***/download
+
+    '''
+    pass
+
+
+# ===  show result part ===
+
 def config_results(results, user_data):
     '''
     Copy user_data to results for demonstration page: user configuration
 
-    results:   related to template/result_demonstration.html
+    results: related to template/result_demonstration.html
     user_data: user configuration
     '''
     results['user_conf'] = {}
@@ -323,6 +355,23 @@ def parse_bart_results(bart_result_file):
             bart_result.append(dict(zip(bart_title, line.split('\t'))))
             line = fopen.readline().strip()
     return bart_result
+
+
+# ===  bart related === 
+def is_bart_done(user_path):
+    auc_flag = False
+    res_flag = False
+    result_dir = os.path.join(user_path, 'download/')
+    if not os.path.exists(result_dir):
+        return False
+
+    for res_file in os.listdir(result_dir):
+        if '_auc.txt' in res_file:
+            auc_flag = True
+        if '_bart_results.txt' in res_file:
+            res_flag = True
+    return (auc_flag and res_flag)
+
 
 # generate bart plot results
 def generate_plot_results(bart_output_dir, tf_name):
