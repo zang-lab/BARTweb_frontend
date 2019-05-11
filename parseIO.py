@@ -309,14 +309,28 @@ def parse_bart_results(bart_result_file):
 def is_bart_done(user_data):
     done = False
     bart_output_dir = os.path.join(user_data['user_path'], 'download/')
+    files = os.listdir(bart_output_dir)
+    count = 0
     if user_data['dataType'] == 'Geneset':
-        for root, dirs, files in os.walk(bart_output_dir):
-            if '_auc.txt' in files and '_bart_results.txt' in files and '_adaptive_lasso_Info.txt' in file and '_enhancer_prediction_lasso.txt' in file:
-                done = True
+        for file in files:
+            if '_auc.txt' in file: 
+                count = count+1;
+            if '_bart_results.txt' in file: 
+                count = count+1;
+            if '_adaptive_lasso_Info.txt' in file: 
+                count = count+1;
+            if '_enhancer_prediction_lasso.txt' in file: 
+                count = count+1;
+        if count==4:
+            done = True
     if user_data['dataType'] == 'ChIP-seq':
-        for root, dirs, files in os.walk(bart_output_dir):
-            if '_auc.txt' in files and '_bart_results.txt' in files:
-                done = True
+        for file in files:
+            if '_auc.txt' in file: 
+                count = count+1;
+            if '_bart_results.txt' in file: 
+                count = count+1;
+        if count==2:
+            done = True
     return done
     
 
