@@ -310,11 +310,13 @@ def is_bart_done(user_data):
     done = False
     bart_output_dir = os.path.join(user_data['user_path'], 'download/')
     if user_data['dataType'] == 'Geneset':
-        if len(os.listdir(bart_output_dir)) == 4:
-            done = True
+        for root, dirs, files in os.walk(bart_output_dir):
+            if '_auc.txt' in files and '_bart_results.txt' in files and '_adaptive_lasso_Info.txt' in file and '_enhancer_prediction_lasso.txt' in file:
+                done = True
     if user_data['dataType'] == 'ChIP-seq':
-        if len(os.listdir(bart_output_dir)) == 2:
-            done = True
+        for root, dirs, files in os.walk(bart_output_dir):
+            if '_auc.txt' in files and '_bart_results.txt' in files:
+                done = True
     return done
     
 
