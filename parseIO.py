@@ -314,39 +314,24 @@ def is_bart_done(user_data):
     if user_data['dataType'] == 'Geneset':
         for file in files:
             if '_auc.txt' in file: 
-                count = count+1;
+                count = count+1
             if '_bart_results.txt' in file: 
-                count = count+1;
+                count = count+1
             if '_adaptive_lasso_Info.txt' in file: 
-                count = count+1;
+                count = count+1
             if '_enhancer_prediction_lasso.txt' in file: 
-                count = count+1;
+                count = count+1
         if count==4:
             done = True
     if user_data['dataType'] == 'ChIP-seq':
         for file in files:
             if '_auc.txt' in file: 
-                count = count+1;
+                count = count+1
             if '_bart_results.txt' in file: 
-                count = count+1;
+                count = count+1
         if count==2:
             done = True
     return done
-    
-
-
-    # auc_flag = False
-    # res_flag = False
-    # result_dir = os.path.join(user_path, 'download/')
-    # if not os.path.exists(result_dir):
-    #     return False
-
-    # for res_file in os.listdir(result_dir):
-    #     if '_auc.txt' in res_file:
-    #         auc_flag = True
-    #     if '_bart_results.txt' in res_file:
-    #         res_flag = True
-    # return (auc_flag and res_flag)
 
 
 # generate bart plot results
