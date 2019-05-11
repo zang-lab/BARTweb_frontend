@@ -144,6 +144,8 @@ def help():
 
     return render_template('help.html')
 
+#############################################
+
 @app.route('/result', methods=['GET', 'POST'])
 def get_result():
     if request.method == 'POST':
@@ -170,6 +172,8 @@ def get_result():
         results = parseIO.generate_results(user_data)
         results['sample'] = False
         return render_template('result_demonstration.html', results=results)
+
+#############################################
 
 @app.route('/key', methods=['GET', 'POST'])
 def show_key():
@@ -216,7 +220,7 @@ def bart_plot_result(userkey_tfname):
     # ========= using d3.js below=============
     # use user_key to retrieve plot related results
     user_path = os.path.join(PROJECT_DIR, 'usercase/' + user_key)
-    bart_output_dir = os.path.join(user_path, 'download/bart_output')
+    bart_output_dir = os.path.join(user_path, 'download/')
 
     plot_results = parseIO.generate_plot_results(bart_output_dir, tf_name)
     return render_template('plot_result.html', plotResults=plot_results)
@@ -236,6 +240,9 @@ def download_result_file(userkey_filename):
     return send_from_directory(download_path, filename)
 
 # ===== for genelist/ChIPdata sample =====
+
+
+
 
 # download sample data
 @app.route('/sample/<sample_type>')
@@ -264,13 +271,7 @@ def sample_result(sample_type):
 
     if user_data:
         results = parseIO.generate_results(user_data)
-        if 'marge_result_files' in results:
-            marge_result_list = []
-            for marge_res_file in results['marge_result_files']:
-                filename, file_url = marge_res_file
-                marge_result_list.append((filename, file_url.replace('download', 'sample_download')))
-            results['marge_result_files'] = marge_result_list
-
+        
         if 'bart_result_files' in results:
             bart_result_list = []
             for bart_res_file in results['bart_result_files']:
@@ -304,5 +305,5 @@ def allowed_file(filename, allowed_extensions):
     return '.' in filename and \
            filename.rsplit('.', 1)[1].lower() in allowed_extensions
 
-# if __name__ == '__main__':
-#     app.run(debug=True,host='0.0.0.0')
+if __name__ == '__main__':
+    app.run(debug=True,host='0.0.0.0')

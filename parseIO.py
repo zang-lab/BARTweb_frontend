@@ -15,6 +15,7 @@ from utils import model_logger as logger
 
 PROJECT_DIR = os.path.dirname(os.path.realpath(__file__))
 
+# in html console.log(myResult)
 # ===  process user input part ===
 def generate_user_key(username, jobname):
     '''
@@ -125,6 +126,19 @@ def is_user_key_exists(user_key):
 
 
 def prepare_bart(user_data):
+
+    bart_input = os.path.join(user_data['user_path'], 'upload/' + user_data['files'])
+    bart_species = user_data['assembly']
+    bart_output_dir = os.path.join(user_data['user_path'], 'download/')
+    if user_data['dataType'] == 'Geneset':
+        excutable = 'bart geneset -i '+bart_input+' -s '+bart_species+' --outdir '+bart_output_dir
+    if user_data['dataType'] == 'ChIP-seq':
+        excutable = 'bart profile -i '+bart_input+' -s '+bart_species+' --outdir '+bart_output_dir
+
+    excutable_file = os.path.join(user_data['user_path'], 'run_bart.sh')
+    with open(excutable_file, 'w') as fopen:
+        fopen.write(excutable)
+    fopen.close()
     '''
     write a shell for running bart
 
@@ -149,99 +163,26 @@ def config_results(results, user_data):
     results['user_conf']['Job_key'] = user_data['user_key']
     results['user_conf']['Species'] = user_data['assembly']
     results['user_conf']['Input_data_type'] = user_data['dataType']
+    results['user_conf']['Input_data'] = user_data['files']
+    
 
-    results['user_conf']['Input_data'] = ""
-    for index, file_path in enumerate(user_data['files']):
-        results['user_conf']['Input_data'] += str(file_path.split('/')[-1])
-        if index != len(user_data['files'])-1:
-            results['user_conf']['Input_data'] += ', '
+# ====================================
+
+# TODO: according to new file architecture which is
+# - usercase/ 
+#   - a_***/
+#     - download/ ***
 
 def generate_results(user_data):
     results = {}
     config_results(results, user_data)
-    results['done'] = True
-    docker_user_path = user_data['user_path'].replace(marge_bart.SLURM_PROJECT_DIR, marge_bart.DOCKER_DIR)
+    results['done'] = is_bart_done(user_data)
 
-    # dataType: ChIP-seq, Geneset, Both
-    # prediction_type: rp, cis, tf, eh
-    # assembly: hg38, mm10
-    # gene_exp_type: Gene_Only, Gene_Response
-    # gene_id_type: GeneSymbol, RefSeq
-    logger.info("Generate results: generate result for {}...".format(user_data['user_key'])) 
+    if results['done']:
+        bart_file_results, bart_table_results = generate_bart_file_results(user_data)
+        results.update(bart_file_results)
+        results.update(bart_table_results)
 
-    # if marge, and marge not in marge_data 
-    if user_data['marge'] \
-        and not marge_bart.is_marge_done(docker_user_path) \
-        and not marge_bart.is_marge_files_exist_in_download(docker_user_path):
-        results['done'] = False
-
-        if 'status' in user_data and (user_data['status'] == 'Error' or user_data['status'] == 'Sent'):
-            results['error'] = True
-
-        logger.info("Generate results: log for user to check procedure...")	
-        proc_log = 'mb_pipe.log'	
-        src_log = os.path.join(docker_user_path, 'log/'+proc_log)	
-        results['proc_log'] = ""	
-        if os.path.exists(src_log):	
-            dest_file_url = '/log/%s___%s' % (user_data['user_key'], proc_log)	
-            logger.info('Generate results: add log to results, show it in result_demonstration...')	
-            results['proc_log'] = dest_file_url	
-        else:	
-            logger.error("Generate results: mb_pipe.log does not exist in {}/log/mb_pipe.log ! ".format(user_data['user_key']))
-        return results
-
-    logger.info("Generate results: generate marge file results...")
-
-    # make sure the marge file could be shown on the result page
-    marge_file_dict = {}
-    if marge_bart.is_marge_done(docker_user_path):
-        marge_file_dict = generate_marge_file_results(user_data, 'marge_data/margeoutput')
-
-    if marge_bart.is_marge_files_exist_in_download(docker_user_path):
-        marge_file_dict = generate_marge_file_results(user_data, 'download')
-
-    results.update(marge_file_dict)
-
-    if user_data['bart'] and not marge_bart.is_bart_done(docker_user_path):
-    # if user_data['bart'] and not marge_bart.is_bart_done(user_data):
-        results['done'] = False
-
-        if 'status' in user_data and (user_data['status'] == 'Error' or user_data['status'] == 'Sent'):
-            results['error'] = True
-
-        # oh disgusting, I am repeating myself....	
-        logger.info("Generate results: log for user to check status...")	
-        proc_log = 'mb_pipe.log'	
-        src_log = os.path.join(docker_user_path, 'log/'+proc_log)	
-        results['proc_log'] = ""	
-        if os.path.exists(src_log):	
-            dest_file_url = '/log/%s___%s' % (user_data['user_key'], proc_log)	
-            logger.info('Generate results: add log to results, show it in result_demonstration...')	
-            results['proc_log'] = dest_file_url	
-        else:	
-            logger.error("Generate results: mb_pipe.log does not exist in {}/log/mb_pipe.log ! ".format(user_data['user_key']))
-        return results
-
-    logger.info("Generate results: generate bart file results...")
-    # bart_file_results, bart_chart_results, bart_table_results = generate_bart_file_results(user_data)
-    bart_file_results, bart_table_results = generate_bart_file_results(user_data)
-    results.update(bart_file_results)
-    # results.update(bart_chart_results)
-    results.update(bart_table_results)
-
-    logger.info("Generate results: log for user to check procedure...")
-    # user_path = user_data['user_path']
-    proc_log = 'mb_pipe.log'
-    src_log = os.path.join(docker_user_path, 'log/'+proc_log)
-    results['proc_log'] = []
-    if os.path.exists(src_log):
-        # dest_file = os.path.join(user_path, 'download/'+proc_log)
-        # shutil.copyfile(src_log, dest_file)
-        # dest_file_url = '/download/%s___%s' % (user_data['user_key'], proc_log)
-        logger.info('Generate results: add log to results, show it in result_demonstration...')
-        results['proc_log'].append(src_log)
-    else:
-        logger.error("Generate results: mb_pipe.log does not exist in {}/log/mb_pipe.log ! ".format(user_data['user_key']))
 
     return results  
 
@@ -304,31 +245,34 @@ def generate_bart_file_results(user_data):
     bart_table_results['bartResult'] = []
     # bart_chart_results['bart_chart_files'] = []
 
-    if not user_data['bart']:
-        return bart_file_results, bart_table_results
         # return bart_file_results, bart_chart_results, bart_table_results
 
     # bart output file path
-    bart_output_dir = os.path.join(user_data['user_path'], 'download/bart_output')
+    bart_output_dir = os.path.join(user_data['user_path'], 'download')
     for root, dirs, files in os.walk(bart_output_dir):
-        if 'bart_output/plot' in root:
-            for chart_file in files:
-                src_file = os.path.join(root, chart_file)
-                dest_file_url = '/download/bart_output/plot/%s___%s' % (user_data['user_key'], chart_file)
-                # bart_chart_results['bart_chart_files'].append((src_file, dest_file_url))
-        else: 
-            for bart_file in files:
-                if '_auc.txt' in bart_file:
-                    src_file = os.path.join(root, bart_file)
-                    dest_file_url = '/download/bart_output/%s___%s' % (user_data['user_key'], bart_file)
-                    bart_file_results['bart_result_files'].append((bart_file, dest_file_url))
-                    
-                if '_bart_results.txt' in bart_file:
-                    src_file = os.path.join(root, bart_file)
-                    dest_file_url = '/download/bart_output/%s___%s' % (user_data['user_key'], bart_file)
-                    bart_file_results['bart_result_files'].append((bart_file, dest_file_url))
-                    # bart table results for demonstration
-                    bart_table_results['bartResult'] = parse_bart_results(src_file)
+        for bart_file in files:
+            if '_auc.txt' in bart_file:
+                src_file = os.path.join(root, bart_file)
+                dest_file_url = '/download/%s___%s' % (user_data['user_key'], bart_file)
+                bart_file_results['bart_result_files'].append((bart_file, dest_file_url))
+                
+            if '_bart_results.txt' in bart_file:
+                src_file = os.path.join(root, bart_file)
+                dest_file_url = '/download/%s___%s' % (user_data['user_key'], bart_file)
+                bart_file_results['bart_result_files'].append((bart_file, dest_file_url))
+                # bart table results for demonstration
+                bart_table_results['bartResult'] = parse_bart_results(src_file)
+
+            if '_adaptive_lasso_Info.txt' in bart_file:
+                src_file = os.path.join(root, bart_file)
+                dest_file_url = '/download/%s___%s' % (user_data['user_key'], bart_file)
+                bart_file_results['bart_result_files'].append((bart_file, dest_file_url))
+
+            if '_enhancer_prediction_lasso.txt' in bart_file:
+                src_file = os.path.join(root, bart_file)
+                dest_file_url = '/download/%s___%s' % (user_data['user_key'], bart_file)
+                bart_file_results['bart_result_files'].append((bart_file, dest_file_url))
+                
 
                     # just finding chart files in bart_output/plot
                     # bart_chart_results['bart_chart_files'] = plot_top_tf(bart_df, bart_output_dir, AUCs)
@@ -358,19 +302,35 @@ def parse_bart_results(bart_result_file):
 
 
 # ===  bart related === 
-def is_bart_done(user_path):
-    auc_flag = False
-    res_flag = False
-    result_dir = os.path.join(user_path, 'download/')
-    if not os.path.exists(result_dir):
-        return False
+# TODO:!!!!  whether bart is done under differnt mode geneset / ChIP-seq
+# For geneset: 4 files
+# For ChIP-seq: 2 files including _auc/_bart_result
 
-    for res_file in os.listdir(result_dir):
-        if '_auc.txt' in res_file:
-            auc_flag = True
-        if '_bart_results.txt' in res_file:
-            res_flag = True
-    return (auc_flag and res_flag)
+def is_bart_done(user_data):
+    done = False
+    bart_output_dir = os.path.join(user_data['user_path'], 'download/')
+    if user_data['dataType'] == 'Geneset':
+        if len(os.listdir(bart_output_dir)) == 4:
+            done = True
+    if user_data['dataType'] == 'ChIP-seq':
+        if len(os.listdir(bart_output_dir)) == 2:
+            done = True
+    return done
+    
+
+
+    # auc_flag = False
+    # res_flag = False
+    # result_dir = os.path.join(user_path, 'download/')
+    # if not os.path.exists(result_dir):
+    #     return False
+
+    # for res_file in os.listdir(result_dir):
+    #     if '_auc.txt' in res_file:
+    #         auc_flag = True
+    #     if '_bart_results.txt' in res_file:
+    #         res_flag = True
+    # return (auc_flag and res_flag)
 
 
 # generate bart plot results
