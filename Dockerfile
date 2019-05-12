@@ -1,5 +1,5 @@
 FROM debian:latest
-MAINTAINER Wenjing Ma
+MAINTAINER Yifan Zhang
 
 # Update OS
 RUN apt-get update -y
@@ -16,6 +16,9 @@ RUN apt-get update && apt-get install -y apache2 \
  && apt-get clean \
  && apt-get autoremove \
  && rm -rf /var/lib/apt/lists/*
+
+# && do not continue if any fails
+
 
 # ADD . /app
 COPY ./requirements.txt /var/www/apache-flask/requirements.txt
@@ -38,7 +41,7 @@ EXPOSE 80
 WORKDIR /var/www/apache-flask
 
 
-RUN mkdir log
+RUN mkdir -p log
 RUN touch log/bart-web.log
 RUN chown -R www-data:www-data log
 RUN chmod -R 775 log

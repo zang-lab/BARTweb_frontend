@@ -58,7 +58,7 @@ def index():
                 if 'uploadFiles' not in request.files:	
                     flash('Please choose a file')	
                     return redirect(request.url)	
-                file = request.files['file']
+                file = request.files['uploadFiles']
                 # if user does not select file, browser also submits an empty part without filename	
                 if file.filename == '':	
                     flash('One of the files does not have a legal file name.')	
