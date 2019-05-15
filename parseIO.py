@@ -131,14 +131,17 @@ def prepare_bart(user_data):
     bart_species = user_data['assembly']
     bart_output_dir = os.path.join(user_data['user_path'], 'download/')
     if user_data['dataType'] == 'Geneset':
-        excutable = 'bart geneset -i '+bart_input+' -s '+bart_species+' --outdir '+bart_output_dir
+        excutable = 'bart geneset -i '+bart_input+' -s '+bart_species+' --outdir '+bart_output_dir+'\n'
     if user_data['dataType'] == 'ChIP-seq':
-        excutable = 'bart profile -i '+bart_input+' -s '+bart_species+' --outdir '+bart_output_dir
-
+        excutable = 'bart profile -i '+bart_input+' -s '+bart_species+' --outdir '+bart_output_dir+'\n'
+    excute_send_email = 'python3 send_finish_email.py {}\n'.format(user_data['user_path'])
     excutable_file = os.path.join(user_data['user_path'], 'run_bart.sh')
     with open(excutable_file, 'w') as fopen:
         fopen.write(excutable)
+        fopen.write(excute_send_email)
     fopen.close()
+
+
     '''
     write a shell for running bart
 
@@ -187,41 +190,6 @@ def generate_results(user_data):
     return results  
 
 
-def generate_marge_file_results(user_data, marge_data_path):
-    '''
-    If marge is done processing, generate marge results file for user to download.
-
-    Input:   
-    user_data: user configuration 
-
-    Return:
-    marge_file_results: related to marge file for downloading   
-    '''
-    # marge procedure log file path
-    marge_file_results = {}
-    marge_file_results['proc_log'] = []
-    marge_file_results['marge_result_files'] = []
-
-    if not user_data['marge']:
-        return marge_file_results
-
-    user_path = user_data['user_path']
-    # marge output file path
-    # marge_output_path = os.path.join(user_path, 'marge_data/margeoutput')
-
-    marge_output_path = os.path.join(user_path, marge_data_path)
-    marge_suffix_type = ['_enhancer_prediction.txt', '_all_relativeRP.txt', '_Strength.txt', '_all_RP.txt', '_target_regressionInfo.txt']
-    for root, dirs, files in os.walk(marge_output_path):
-        for file in files:
-            for file_type in marge_suffix_type:
-                if file_type in str(file):
-                    # src_file = os.path.join(root, file)
-                    # dest_file = os.path.join(user_path, 'download/' + file)
-                    # shutil.copyfile(src_file, dest_file)
-                    dest_file_url = '/download/%s___%s' % (user_data['user_key'], file)
-                    marge_file_results['marge_result_files'].append((file, dest_file_url))
-
-    return marge_file_results
 
 
 def generate_bart_file_results(user_data):
