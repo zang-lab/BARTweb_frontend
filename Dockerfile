@@ -7,11 +7,11 @@ RUN apt-get update -y
 # Install Python other things
 #RUN apt-get install -y python-pip python-dev build-essential
 RUN apt-get update && apt-get install -y apache2 \
-    libapache2-mod-wsgi \
+    libapache2-mod-wsgi-py3 \
     build-essential \
-    python \
-    python-dev\
-    python-pip \
+    python3 \
+    python3-dev\
+    python3-pip \
     vim \
  && apt-get clean \
  && apt-get autoremove \
@@ -23,7 +23,7 @@ RUN apt-get update && apt-get install -y apache2 \
 # ADD . /app
 COPY ./requirements.txt /BARTweb/requirements.txt
 # RUN pip install uwsgi
-RUN pip install -r /BARTweb/requirements.txt
+RUN pip3 install -r /BARTweb/requirements.txt
 
 # Copy over the apache configuration file and enable the site
 COPY ./apache-flask.conf /etc/apache2/sites-available/apache-flask.conf
