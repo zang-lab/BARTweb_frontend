@@ -21,16 +21,16 @@ RUN apt-get update && apt-get install -y apache2 \
 
 
 # ADD . /app
-COPY ./requirements.txt /var/www/apache-flask/requirements.txt
+COPY ./requirements.txt /BARTweb/requirements.txt
 # RUN pip install uwsgi
-RUN pip install -r /var/www/apache-flask/requirements.txt
+RUN pip install -r /BARTweb/requirements.txt
 
 # Copy over the apache configuration file and enable the site
 COPY ./apache-flask.conf /etc/apache2/sites-available/apache-flask.conf
 RUN a2ensite apache-flask
 RUN a2enmod headers
 
-COPY  . /var/www/apache-flask/
+COPY  . /BARTweb/
 
 RUN a2dissite 000-default.conf
 RUN a2ensite apache-flask.conf
@@ -38,16 +38,12 @@ RUN a2ensite apache-flask.conf
 EXPOSE 80
 
 # ENV HOME /app change to apache-flask
-WORKDIR /var/www/apache-flask
+WORKDIR /BARTweb/
 
-
+# For log
 RUN mkdir -p log
-RUN touch log/bart-web.log
+RUN touch log/bartweb.log
 RUN chown -R www-data:www-data log
 RUN chmod -R 775 log
 
-
 CMD /usr/sbin/apache2ctl -D FOREGROUND
-
-# ENTRYPOINT ["python"]
-# CMD ["app.py"]
