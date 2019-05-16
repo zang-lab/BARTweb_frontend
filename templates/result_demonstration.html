@@ -45,6 +45,21 @@
             <!-- bart result table by tabulor -->
             <div id="bart-result"></div>
           </div>
+<!-- adding the copy key part -->
+          <div id="copy_key" class="col-md-12 order-md-1 mb-3" hidden>
+            <p>It generally takes around 10 minutes. </p>
+            <p>Please check your email for notices. If you didn't provide your email address, please keep the job key by clicking "Copy Key" button below and saving it. You will need this key to retrieve the result.</p>
+            <div class="row">
+              <div class="col-md-8 mb-3">
+                <input class="form-control" type="text" id="user_key_demostration" name="user_key_demostration" value={{key}} readonly>
+              </div>
+              
+              <div class="col-md-4 mb-3">
+                <button class="btn btn-primary btn-lg btn-block btn-sm" onclick="copy_func()">Copy Key</button>
+              </div>
+            </div>
+          </div>
+<!-- adding the copy key part -->
 
             <div id="procLog" class="col-md-12 mb-3" hidden>
               <h5 class="mb-3">Processing log</h5>
@@ -130,7 +145,12 @@
           var brTag = document.createElement("br");
           document.getElementById("resultOutputDiv").appendChild(brTag);
           
+          // load get key block
+
           // load processing log
+          var logTextDiv = document.getElementById("copy_key");
+          logTextDiv.removeAttribute("hidden");
+
           var logTextDiv = document.getElementById("procLog");
           var logTextArea = document.getElementById("procLogText");
           logTextDiv.removeAttribute("hidden");
