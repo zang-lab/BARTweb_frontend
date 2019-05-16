@@ -281,6 +281,9 @@ def is_bart_done(user_data):
     count = 0
     if user_data['dataType'] == 'Geneset':
         for file in files:
+            if utils.is_file_zero(os.path.join(bart_output_dir, file)):
+                continue
+
             if '_auc.txt' in file: 
                 count = count+1
             if '_bart_results.txt' in file: 
@@ -293,6 +296,9 @@ def is_bart_done(user_data):
             done = True
     if user_data['dataType'] == 'ChIP-seq':
         for file in files:
+            if utils.is_file_zero(os.path.join(bart_output_dir, file)):
+                continue
+
             if '_auc.txt' in file: 
                 count = count+1
             if '_bart_results.txt' in file: 

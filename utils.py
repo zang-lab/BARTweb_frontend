@@ -26,6 +26,8 @@ def create_dir(directory):
     except OSError:
         model_logger.error('Error: Creating directory {} '.format(directory))
 
+def is_file_zero(file):
+    return True if os.path.getsize(file) == 0 else False
 
 def send_sqs_message(directory):
     '''
