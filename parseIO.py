@@ -131,9 +131,15 @@ def prepare_bart(user_data):
     bart_species = user_data['assembly']
     bart_output_dir = os.path.join(user_data['user_path'], 'download/')
     if user_data['dataType'] == 'Geneset':
-        excutable = 'python3 bin/bart2 geneset -i '+bart_input+' -s '+bart_species+' --outdir '+bart_output_dir+'\n'
+        excutable = 'python3 bin/bart2 geneset -i '+bart_input+' -s '+bart_species+' --outdir '+bart_output_dir+' > {} 2>&1 '.format(os.path.join(user_data['user_path'],'log/mb_pipe.log'))+'\n'
     if user_data['dataType'] == 'ChIP-seq':
-        excutable = 'python3 bin/bart2 profile -i '+bart_input+' -s '+bart_species+' --outdir '+bart_output_dir+'\n'
+        ext = user_data['files'].split('.')[-1]
+        if ext == 'bam':
+            excutable = 'python3 bin/bart2 profile -f bam -i '+bart_input+' -s '+bart_species+' --outdir '+bart_output_dir+' > {} 2>&1 '.format(os.path.join(user_data['user_path'],'log/mb_pipe.log')) +'\n'
+        elif ext == 'bed':
+            excutable = 'python3 bin/bart2 profile -f bed -i '+bart_input+' -s '+bart_species+' --outdir '+bart_output_dir+' > {} 2>&1 '.format(os.path.join(user_data['user_path'],'log/mb_pipe.log')) +'\n'
+        else:
+            logger.error("illegal file extension")
     excute_send_email = 'python3 send_finish_email.py {}\n'.format(user_data['user_path'])
     excutable_file = os.path.join(user_data['user_path'], 'run_bart.sh')
     with open(excutable_file, 'w') as fopen:
@@ -155,19 +161,7 @@ def prepare_bart(user_data):
 
 # ===  show result part ===
 
-def config_results(results, user_data):
-    '''
-    Copy user_data to results for demonstration page: user configuration
 
-    results: related to template/result_demonstration.html
-    user_data: user configuration
-    '''
-    results['user_conf'] = {}
-    results['user_conf']['Job_key'] = user_data['user_key']
-    results['user_conf']['Species'] = user_data['assembly']
-    results['user_conf']['Input_data_type'] = user_data['dataType']
-    results['user_conf']['Input_data'] = user_data['files']
-    
 
 # ====================================
 
@@ -178,13 +172,19 @@ def config_results(results, user_data):
 
 def generate_results(user_data):
     results = {}
-    config_results(results, user_data)
+    results['user_conf'] = {}
+    results['user_conf']['Job_key'] = user_data['user_key']
+    results['user_conf']['Species'] = user_data['assembly']
+    results['user_conf']['Input_data_type'] = user_data['dataType']
+    results['user_conf']['Input_data'] = user_data['files']
     results['done'] = is_bart_done(user_data)
 
     if results['done']:
         bart_file_results, bart_table_results = generate_bart_file_results(user_data)
         results.update(bart_file_results)
         results.update(bart_table_results)
+    else:
+        results['proc_log'] = '/log/{}___{}'.format(user_data['user_key'],'mb_pipe.log')
 
 
     return results  
