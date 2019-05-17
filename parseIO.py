@@ -131,9 +131,9 @@ def prepare_bart(user_data):
     bart_species = user_data['assembly']
     bart_output_dir = os.path.join(user_data['user_path'], 'download/')
     if user_data['dataType'] == 'Geneset':
-        excutable = 'python3 bin/revised_bart geneset -i '+bart_input+' -s '+bart_species+' --outdir '+bart_output_dir+'\n'
+        excutable = 'python3 bin/bart2 geneset -i '+bart_input+' -s '+bart_species+' --outdir '+bart_output_dir+'\n'
     if user_data['dataType'] == 'ChIP-seq':
-        excutable = 'python3 bin/revised_bart profile -i '+bart_input+' -s '+bart_species+' --outdir '+bart_output_dir+'\n'
+        excutable = 'python3 bin/bart2 profile -i '+bart_input+' -s '+bart_species+' --outdir '+bart_output_dir+'\n'
     excute_send_email = 'python3 send_finish_email.py {}\n'.format(user_data['user_path'])
     excutable_file = os.path.join(user_data['user_path'], 'run_bart.sh')
     with open(excutable_file, 'w') as fopen:
