@@ -52,13 +52,13 @@ def index():
                         fopen.write(gene)
                 user_data['files'] = gene_list_file
 
-            if request.form['dataType'] == 'ChIP-seq' or \
-                (request.form['dataType'] == 'Geneset' and request.form['geneType'] == 'geneFile'):	
+            # validate upload file and write fine name and file path into config in the case of profile input
+            if request.form['dataType'] == 'ChIP-seq':	
                 # process what user has uploaded	
-                if 'uploadFiles' not in request.files:	
+                if 'uploadFilesProfile' not in request.files:	
                     flash('Please choose a file')	
                     return redirect(request.url)	
-                file = request.files['uploadFiles']
+                file = request.files['uploadFilesProfile']
                 # if user does not select file, browser also submits an empty part without filename	
                 if file.filename == '':	
                     flash('One of the files does not have a legal file name.')	
@@ -68,14 +68,31 @@ def index():
                 if file and allowed_file(file.filename, allowed_extensions):	
                     filename = secure_filename(file.filename)	
                     upload_path = os.path.join(user_path, 'upload')	
-                    if user_data['dataType'] == "ChIP-seq":
-                        ext = filename.split('.')[-1]
-                        filename = "ChIP_seq."+ext
-                        filename_abs_path = os.path.join(upload_path, filename)	
-                    if user_data['dataType'] == "Geneset":
-                        filename = "Geneset.txt"
-                        filename_abs_path = os.path.join(upload_path, filename)   
+                    ext = filename.split('.')[-1]
+                    filename = "ChIP_seq."+ext
+                    filename_abs_path = os.path.join(upload_path, filename)	
                     file.save(filename_abs_path)	
+                    user_data['files'] = filename # only save file name, since the uploaded path is always the same
+            
+            # validate upload file and write fine name and file path into config in the case of genelist input
+            if request.form['dataType'] == 'Geneset' and request.form['geneType'] == 'geneFile': 
+                # process what user has uploaded    
+                if 'uploadFilesGenelist' not in request.files:  
+                    flash('Please choose a file')   
+                    return redirect(request.url)    
+                file = request.files['uploadFilesGenelist']
+                # if user does not select file, browser also submits an empty part without filename 
+                if file.filename == '': 
+                    flash('One of the files does not have a legal file name.')  
+                    return redirect(request.url)
+                # make sure the suffix of filename in [.txt, .bam, .bed]
+                datatype = request.form['dataType']
+                if file and allowed_file(file.filename, allowed_extensions):    
+                    filename = secure_filename(file.filename)   
+                    upload_path = os.path.join(user_path, 'upload') 
+                    filename = "Geneset.txt"
+                    filename_abs_path = os.path.join(upload_path, filename)   
+                    file.save(filename_abs_path)    
                     user_data['files'] = filename # only save file name, since the uploaded path is always the same
 
             parseIO.init_user_config(user_path, user_data)

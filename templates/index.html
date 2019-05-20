@@ -93,7 +93,7 @@
               </div>
             </div>
           
-          <form class="needs-validation" method=post enctype=multipart/form-data novalidate>
+          <form id="inputForm" class="needs-validation" method=post enctype=multipart/form-data autocomplete="off" novalidate>
             <div class="row">
               <div class="col-md-2 mb-3">
                 <p class="mb-3" id="assembly" ><b>Species:</b></p>
@@ -168,7 +168,12 @@
                     <p id="ChIPFile" hidden>Upload: </p>
                   </div>
                   <div class="col-md-9">
-                    <input id="uploadFiles" name="uploadFiles" type="file" accept=".txt" required> <!-- not for multiple, only allow one file -->
+
+                    <!-- place to upload file(genelist/profile), by defult hidden -->
+                    <input id="uploadFilesGenelist" name="uploadFilesGenelist" type="file" accept=".txt" required>
+                    <input id="uploadFilesProfile" name="uploadFilesProfile" type="file" accept=".bam,.bed" hidden>
+                    <!-- <div id="progressBar" class="progress-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%;">0%</div> -->
+                     <!-- not for multiple, only allow one file -->
 
                     <p id="geneFileType">Genelist must be <b>official gene symbol</b> in .txt format (each name in a row). More than 100 genes is recommended.</p>
                     <p id="chipFileType" hidden>ChIP-seq must be <b>mapped reads data files</b> in .bed/.bam format in the corresponding genome assembly.</p>
@@ -244,7 +249,7 @@
     ================================================== -->
     <!-- Placed at the end of the document so the pages load faster -->
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
-    <script>window.jQuery || document.write('<script src="../../assets/js/vendor/jquery-slim.min.js"><\/script>')</script>
+    <!-- <script>window.jQuery || document.write('<script src="../../assets/js/vendor/jquery-slim.min.js"><\/script>')</script> -->
     <!-- <script src="../../assets/js/vendor/popper.min.js"></script> -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
     <!-- <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.2/js/bootstrap.min.js"></script> -->
@@ -254,7 +259,12 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/intro.js/2.9.3/intro.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/intro.js/2.9.3/intro.min.js"></script>
 
+    <!-- for file upload bar -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
+    <!-- <script src="{{ url_for('static', filename='upload.js') }}"></script> -->
     
+
+
     <script type="text/javascript">
       function pop_up_func() {
           // $("#myModal").modal();
@@ -272,6 +282,8 @@
       }
     </script>
 
+
+
     <script>
     // Example starter JavaScript for disabling form submissions if there are invalid fields
       (function() {
@@ -283,6 +295,9 @@
           // Loop over them and prevent submission
           var validation = Array.prototype.filter.call(forms, function(form) {
             form.addEventListener('submit', function(event) {
+
+              console.log("Form validity " + form.checkValidity());
+
               if (form.checkValidity() === false) {
                 event.preventDefault();
                 event.stopPropagation();
@@ -292,7 +307,8 @@
 
                 // check whether gene list button was checked and whether there is value under this condition
                 if (document.getElementById('genelist').checked && document.getElementById('geneFile').checked) { 
-                    var fileElement = document.getElementById('uploadFiles');
+                  
+                  var fileElement = document.getElementById('uploadFilesGenelist');
                     if ( fileElement.value == "") {
                       count += 1;
                       alertStr = alertStr.concat('Please upload your genelist file.\n');
@@ -309,7 +325,7 @@
                     } 
                 }
 
-                if (document.getElementById('ChIP-seq').checked && document.getElementById('uploadFiles').value == "") {
+                if (document.getElementById('ChIP-seq').checked && document.getElementById('uploadFilesProfile').value == "") {
                   count += 1;
                   alertStr = alertStr.concat('Please upload your ChIP-seq reads file.\n');
                   // alert('Please upload your ChIP-seq reads file.');
@@ -327,13 +343,14 @@
                     alert(alertStr);
                 }
 
-              } else {
+              } 
+              else {
                 // console.log('Check validity true');
                 form.classList.add('was-validated');
 
                 // check user uploaded gene counts in file
                 if (document.getElementById('genelist').checked && document.getElementById('geneFile').checked) { 
-                  var fileElement = document.getElementById('uploadFiles');
+                  var fileElement = document.getElementById('uploadFilesGenelist');
                   var fileObject = fileElement.files[0];
                   var reader = new FileReader();
                   reader.onload = function() {
@@ -404,6 +421,12 @@
       switch(n)
       {
         case 'ChIP-seq':
+          $('#uploadFilesProfile').removeAttr('hidden');
+          $('#uploadFilesGenelist').prop('hidden', true);
+
+          $('#uploadFilesGenelist').removeAttr('required');
+          $('#uploadFilesProfile').prop('required', true);
+
           $('#geneDataRadio').prop("hidden", true);
           $('#geneFileRadio').prop("hidden", true);
           $('#ChIPFile').removeAttr('hidden');
@@ -413,17 +436,24 @@
           $('#chipFileType').removeAttr('hidden');
 
           // enable upload files if diabled due to geneFile choice
-          $('#uploadFiles').prop('disabled', false);
-          $('#uploadFiles').attr("accept", ".bam,.bed");
+          $('#uploadFilesProfile').prop('disabled', false);
+          $('#uploadFilesProfile').attr("accept", ".bam,.bed");
 
           $('#uploadList').prop('disabled', true);
           $('#uploadList').css('background-color' , '#e9ecef');
 
           // clear genelist data
-          $('#uploadFiles').val('');
+          $('#uploadFilesGenelist').val('');
           $('#uploadList').val('');
           break;
         case 'Geneset':
+
+          $('#uploadFilesGenelist').removeAttr('hidden');
+          $('#uploadFilesProfile').prop("hidden", true);
+
+          $('#uploadFilesProfile').removeAttr('required');
+          $('#uploadFilesGenelist').prop('required', true);
+
           $('#geneDataRadio').removeAttr('hidden');
           $('#geneFileRadio').removeAttr('hidden');
           $('#ChIPFile').prop("hidden", true);
@@ -434,14 +464,14 @@
 
           // change back following input data choices
           $('input:radio[name=geneType]')[0].checked = true;
-          $('#uploadFiles').prop('disabled', false);
-          $('#uploadFiles').attr("accept", ".txt");
+          $('#uploadFilesGenelist').prop('disabled', false);
+          $('#uploadFilesGenelist').attr("accept", ".txt");
 
           $('#uploadList').prop('disabled', true);
           $('#uploadList').css('background-color' , '#e9ecef');
 
           // clear ChIP-seq data
-          $('#uploadFiles').val('');
+          $('#uploadFilesProfile').val('');
           break;
       }
     });
@@ -455,13 +485,13 @@
       switch(n)
       {
         case 'geneData':
-          $('#uploadFiles').prop('disabled', true);
-          $('#uploadFiles').val('');
+          $('#uploadFilesGenelist').prop('disabled', true);
+          $('#uploadFilesGenelist').val('');
           $('#uploadList').prop('disabled', false);
           $('#uploadList').css('background-color' , '#FFFFFF');
           break;
         case 'geneFile':
-          $('#uploadFiles').prop('disabled', false);
+          $('#uploadFilesGenelist').prop('disabled', false);
           $('#uploadList').val('');
           $('#uploadList').prop('disabled', true);
           $('#uploadList').css('background-color' , '#e9ecef');
