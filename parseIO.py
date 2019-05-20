@@ -44,16 +44,16 @@ def generate_user_key(username, jobname):
 
     logger.info("Init project: user key is {}...".format(key))
 
-    # send key to user's e-mail	
-    if username != "":	
-        logger.info("Init project: send e-mail to {} for {}".format(user_mail, key))	
-        send_flag, send_msg = utils.send_email(user_mail, key, 'Submit')	
-        if send_flag:	
-            logger.info("Init project: " + send_msg)	
-        else:	
-            logger.error("Init project:" + send_msg)
-    else:
-        logger.error("Init project: username is null")
+    # send key to user's e-mail	in app.py
+    # if username != "":	
+    #     logger.info("Init project: send e-mail to {} for {}".format(user_mail, key))	
+    #     send_flag, send_msg = utils.send_email(user_mail, key, 'Submit')	
+    #     if send_flag:	
+    #         logger.info("Init project: " + send_msg)	
+    #     else:	
+    #         logger.error("Init project:" + send_msg)
+    # else:
+    #     logger.error("Init project: username is null")
 
     return key
 

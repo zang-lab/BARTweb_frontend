@@ -5,7 +5,9 @@ from flask import (Flask, flash, request, redirect, url_for, render_template, se
 from werkzeug.utils import secure_filename
 
 import parseIO
-from utils import model_logger as logger
+from utils import model_logger as logger 
+import utils
+
 
 PROJECT_DIR = os.path.dirname(os.path.realpath(__file__))
 
@@ -17,12 +19,17 @@ app.secret_key = os.urandom(24)
 @app.route('/', methods=['GET', 'POST'])
 def index():
     if request.method == 'POST':
+        print(request.form)
         # submit job button
         if 'submit_button' in request.form:
             # use user email or job name to generate unique job path
             username = request.form['username']
             jobname = request.form['jobname']
-            user_key = parseIO.generate_user_key(username, jobname)
+
+            if "userkey" in request.form:
+                user_key = request.form['userkey']
+            else:
+                user_key = parseIO.generate_user_key(username, jobname)
 
             # docker user path
             user_path = parseIO.init_project_path(user_key)
@@ -37,10 +44,11 @@ def index():
             user_data['assembly'] = request.form['species']
             user_data['files'] = ""
 
-            if user_data['dataType'] == "ChIP-seq":
-                allowed_extensions = set(['bam', 'bed'])
-            if user_data['dataType'] == "Geneset":
-                allowed_extensions = set(['txt'])
+            #Already cheked in HTML
+            # if user_data['dataType'] == "ChIP-seq":
+            #     allowed_extensions = set(['bam', 'bed'])
+            # if user_data['dataType'] == "Geneset":
+            #     allowed_extensions = set(['txt'])
 
             # get pasted genes and save to upload/genelist.txt
             if request.form.get('uploadList', None):
@@ -65,7 +73,7 @@ def index():
                     return redirect(request.url)
                 # make sure the suffix of filename in [.txt, .bam, .bed]
                 datatype = request.form['dataType']
-                if file and allowed_file(file.filename, allowed_extensions):	
+                if file: #and allowed_file(file.filename, allowed_extensions):	
                     filename = secure_filename(file.filename)	
                     upload_path = os.path.join(user_path, 'upload')	
                     ext = filename.split('.')[-1]
@@ -87,7 +95,7 @@ def index():
                     return redirect(request.url)
                 # make sure the suffix of filename in [.txt, .bam, .bed]
                 datatype = request.form['dataType']
-                if file and allowed_file(file.filename, allowed_extensions):    
+                if file: #and allowed_file(file.filename, allowed_extensions):    
                     filename = secure_filename(file.filename)   
                     upload_path = os.path.join(user_path, 'upload') 
                     filename = "Geneset.txt"
@@ -97,6 +105,17 @@ def index():
 
             parseIO.init_user_config(user_path, user_data)
             parseIO.prepare_bart(user_data)
+
+            if username != "":  
+                logger.info("Init project: send e-mail to {} for {}".format(username, user_key))    
+                send_flag, send_msg = utils.send_email(username, user_key, 'Submit')    
+                if send_flag:   
+                    logger.info("Init project: " + send_msg)    
+                else:   
+                    logger.error("Init project:" + send_msg)
+            else:
+                logger.error("Init project: username is null")
+
             return redirect(url_for('get_result', user_key=user_key))
 
         # get result button
@@ -288,10 +307,10 @@ def download_sample_result(userkey_filename):
     download_path = os.path.join(user_path, 'download')
     return send_from_directory(download_path, filename)
 
-
-def allowed_file(filename, allowed_extensions):
-    return '.' in filename and \
-           filename.rsplit('.', 1)[1].lower() in allowed_extensions
+# already checked in HTML
+# def allowed_file(filename, allowed_extensions):
+#     return '.' in filename and \
+#            filename.rsplit('.', 1)[1].lower() in allowed_extensions
 
 if __name__ == '__main__':
     app.run(debug=True,host='0.0.0.0')
