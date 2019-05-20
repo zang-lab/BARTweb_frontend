@@ -86,6 +86,24 @@
       {% include "footer.html" %}
     </div>
 
+    <!-- scripts for copy key -->
+    <script type="text/javascript">
+      function copy_func() {
+          /* Get the text field */
+          var copyText = document.getElementById("user_key_demostration");
+          /* Select the text field */
+          copyText.select();
+          /* Copy the text inside the text field */
+          document.execCommand("copy");
+          /* Alert the copied text */
+          alert("Copied the text: " + copyText.value);
+      }
+    </script>
+
+
+
+    <!-- scripts for copy key ends -->
+
     <script type="text/javascript">
       var myResult = {{ results | tojson }}; 
       var sampleFlag = myResult.sample;
