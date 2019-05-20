@@ -48,21 +48,22 @@ $(document).ready(function() {
 
 		
  		for (var pair of formData.entries()){
- 			console.log(pair[0]+', '+pair[1]);
+ 			//console.log(pair[0]+', '+pair[1]);
  		}
 
 		$.ajax({
 			xhr : function() {
 				var xhr = new window.XMLHttpRequest();
-				console.log(xhr)
+				//console.log(xhr)
 
 				xhr.upload.addEventListener('progress', function(e) {
 					console.log(e.lengthComputable)
+					$('#progressBar').removeAttr('hidden');
 					if (e.lengthComputable) {
 
-						console.log('Bytes Loaded: ' + e.loaded);
-						console.log('Total Size: ' + e.total);
-						console.log('Percentage Uploaded: ' + (e.loaded / e.total))
+						// console.log('Bytes Loaded: ' + e.loaded);
+						// console.log('Total Size: ' + e.total);
+						// console.log('Percentage Uploaded: ' + (e.loaded / e.total))
 
 						var percent = Math.round((e.loaded / e.total) * 100);
 

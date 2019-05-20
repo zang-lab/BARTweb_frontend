@@ -172,7 +172,7 @@
                     <!-- place to upload file(genelist/profile), by defult hidden -->
                     <input id="uploadFilesGenelist" name="uploadFilesGenelist" type="file" accept=".txt" required>
                     <input id="uploadFilesProfile" name="uploadFilesProfile" type="file" accept=".bam,.bed" hidden>
-                    <div id="progressBar" class="progress-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%;">0%</div>
+                    <div id="progressBar" class="progress-bar" role="progressbar" aria-valuenow="0" hidden aria-valuemin="0" aria-valuemax="100" style="width: 0%;">0%</div>
                      <!-- not for multiple, only allow one file -->
 
                     <p id="geneFileType">Genelist must be <b>official gene symbol</b> in .txt format (each name in a row). More than 100 genes is recommended.</p>
@@ -284,6 +284,8 @@
 
 
 
+
+
     <script>
     // Example starter JavaScript for disabling form submissions if there are invalid fields
       (function() {
@@ -291,6 +293,25 @@
         window.addEventListener('load', function() {
           // Fetch all the forms we want to apply custom Bootstrap validation styles to
           var forms = document.getElementsByClassName('needs-validation');
+
+
+          //check user uploaded gene counts when a gnen list file is selected
+          function showLength(fileUploadEvent) {
+            var reader = new FileReader();
+              // set up the event handler for when the file is loaded
+            reader.onload = function() {
+              var dataLength = reader.result.split("\n").length;
+              if (dataLength<100) {
+                  alert("The uploaded gene list contains less than 100 genes. This may cause error or the result may not be optimal.");
+              }
+              
+            }
+              // fire off 
+            reader.readAsText(fileUploadEvent.target.files[0]);
+          }
+
+          document.getElementById('uploadFilesGenelist').addEventListener('change', showLength);
+
 
           // Loop over them and prevent submission
           var validation = Array.prototype.filter.call(forms, function(form) {
@@ -348,23 +369,6 @@
                 // console.log('Check validity true');
                 form.classList.add('was-validated');
 
-                // check user uploaded gene counts in file
-                if (document.getElementById('genelist').checked && document.getElementById('geneFile').checked) { 
-                  var fileElement = document.getElementById('uploadFilesGenelist');
-                  var fileObject = fileElement.files[0];
-                  var reader = new FileReader();
-                  reader.onload = function() {
-                    var fileLength = reader.result.split("\n").length;
-                    if (fileLength < 100) {
-                      if (!confirm("The uploaded gene list contains less than 100 genes. This may cause error or the result may not be optimal. Would you like to continue?")) {
-                        event.preventDefault();
-                        event.stopPropagation();
-                      }
-                    }
-                  };
-                  reader.readAsText(fileObject);
-                }
-                
                 // check user uploaded gene counts in textarea
                 if (document.getElementById('genelist').checked && document.getElementById('geneData').checked) { 
                   var dataElement = document.getElementById('uploadList');
@@ -376,6 +380,7 @@
                     }
                   }
                 }
+                
 
                 // check jobname
                 var jobname = document.getElementById('jobname').value;
@@ -421,6 +426,8 @@
       switch(n)
       {
         case 'ChIP-seq':
+          $('#progressBar').prop("hidden", true);
+
           $('#uploadFilesProfile').removeAttr('hidden');
           $('#uploadFilesGenelist').prop('hidden', true);
 
@@ -447,6 +454,7 @@
           $('#uploadList').val('');
           break;
         case 'Geneset':
+          $('#progressBar').prop("hidden", true);
 
           $('#uploadFilesGenelist').removeAttr('hidden');
           $('#uploadFilesProfile').prop("hidden", true);
