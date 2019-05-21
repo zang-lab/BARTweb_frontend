@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from __future__ import division
-import os, sys
+import os, sys, time
 import subprocess
 import shutil
 import json
@@ -17,45 +17,32 @@ PROJECT_DIR = os.path.dirname(os.path.realpath(__file__))
 
 # in html console.log(myResult)
 # ===  process user input part ===
-def generate_user_key(username, jobname):
+def generate_user_key(user_email, jobname):
     '''
     generate key according to e-mail or jobname
     '''
 
     logger.info("Init project: generate key ...")
+    tstamp = str(time.time()).replace('.','') # userkey: name_timestamp
 
-    import time
-    tstamp = time.time() # userkey: name_timestamp
-    user_mail = username
-
+    userkey_prefix = ""
     # if jobname is null    
     if jobname == '':
-        if username == '': 
+        if user_email == '': 
             logger.info("Init project: user does not input e-mail or jobname...")
-            username = 'anonymous'
+            userkey_prefix = 'anonymous'
         else:
-            logger.info("Init project: user e-mail is {}...".format(username))
-            username = username.split('@')[0]
+            logger.info("Init project: user e-mail is {}...".format(user_email))
+            userkey_prefix = user_email.split('@')[0]
     # if jobname is not null, generate key according to jobname
     else: 
         logger.info("Init project: user jobname is {}...".format(jobname))
-        username = jobname.replace(' ', '')  # get rid of spaces
-    key = username + '_' + str(tstamp)
+        userkey_prefix = jobname.replace(' ', '')  # get rid of spaces
+    
+    user_key = userkey_prefix + '_' + tstamp
+    logger.info("Init project: user key is {}...".format(user_key))
 
-    logger.info("Init project: user key is {}...".format(key))
-
-    # send key to user's e-mail	in app.py
-    # if username != "":	
-    #     logger.info("Init project: send e-mail to {} for {}".format(user_mail, key))	
-    #     send_flag, send_msg = utils.send_email(user_mail, key, 'Submit')	
-    #     if send_flag:	
-    #         logger.info("Init project: " + send_msg)	
-    #     else:	
-    #         logger.error("Init project:" + send_msg)
-    # else:
-    #     logger.error("Init project: username is null")
-
-    return key
+    return user_key
 
 def init_project_path(user_key):
     '''

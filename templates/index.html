@@ -206,24 +206,12 @@
                 <p><b>E-mail:</b><br /><span class="text-muted">(Optional)</span></p>
               </div>
               <div class="col-md-4 mb-3">
-                <input type="email" class="form-control" id="username" name="username" placeholder="name@domain.com">
+                <input type="email" class="form-control" id="useremail" name="useremail" placeholder="name@domain.com">
                 <div class="invalid-feedback" style="width: 100%;">
                     Your e-mail is incorrect.
                 </div>
               </div>
             </div>
-
-            <!-- <div class="row"> -->
-              <!-- <div class="col-md-3 mb-3">
-                <p><b>E-mail:</b><br /><span class="text-muted">(Optional)</span></p>
-              </div>
-              <div class="col-md-9 mb-3">
-                <input type="email" class="form-control" id="username" name="username" placeholder="name@domain.com">
-                <div class="invalid-feedback" style="width: 100%;">
-                    Your e-mail is incorrect.
-                </div>
-              </div> -->
-            <!-- </div> -->
 
             <hr class="mb-3">
 
@@ -294,11 +282,10 @@
           // Fetch all the forms we want to apply custom Bootstrap validation styles to
           var forms = document.getElementsByClassName('needs-validation');
 
-
-          //check user uploaded gene counts when a gnen list file is selected
+          //check user uploaded gene counts when a gene list file is selected
           function showLength(fileUploadEvent) {
             var reader = new FileReader();
-              // set up the event handler for when the file is loaded
+            // set up the event handler for when the file is loaded
             reader.onload = function() {
               var dataLength = reader.result.split("\n").length;
               if (dataLength<100) {
@@ -306,7 +293,7 @@
               }
               
             }
-              // fire off 
+            // fire off 
             reader.readAsText(fileUploadEvent.target.files[0]);
           }
 
@@ -317,7 +304,7 @@
           var validation = Array.prototype.filter.call(forms, function(form) {
             form.addEventListener('submit', function(event) {
 
-              console.log("Form validity " + form.checkValidity());
+              // console.log("Form validity " + form.checkValidity());
 
               if (form.checkValidity() === false) {
                 event.preventDefault();
@@ -328,12 +315,10 @@
 
                 // check whether gene list button was checked and whether there is value under this condition
                 if (document.getElementById('genelist').checked && document.getElementById('geneFile').checked) { 
-                  
                   var fileElement = document.getElementById('uploadFilesGenelist');
                     if ( fileElement.value == "") {
                       count += 1;
                       alertStr = alertStr.concat('Please upload your genelist file.\n');
-                      // alert('Please upload your genelist file.');
                     } 
                 }
 
@@ -342,22 +327,19 @@
                     if ( dataElement.value == "") {
                       count += 1;
                       alertStr = alertStr.concat('Please paste your genelist data.\n');
-                      // alert('Please paste your genelist data.');
                     } 
                 }
 
                 if (document.getElementById('ChIP-seq').checked && document.getElementById('uploadFilesProfile').value == "") {
                   count += 1;
                   alertStr = alertStr.concat('Please upload your ChIP-seq reads file.\n');
-                  // alert('Please upload your ChIP-seq reads file.');
                 }
 
                 // if e-mail name is not null, check and alert
-                var emailText = document.getElementById('username').value;
+                var emailText = document.getElementById('useremail').value;
                 if (emailText != "" && !emailText.includes('@')) {
                   count += 1;
                   alertStr = alertStr.concat('Please leave a correct email address.');
-                  // alert('Please input a correct email address.')
                 }
                 
                 if ( count > 0) {
@@ -381,18 +363,14 @@
                   }
                 }
                 
-
                 // check jobname
                 var jobname = document.getElementById('jobname').value;
-                // console.log(jobname);
                 if (jobname != "") {
                     var count = 0;
                     var alertStr = ""
                     if (jobname.length > 20) {
                       count += 1;
                       alertStr = alertStr.concat('Please shorten your job name to less than 20 characters.\n');
-                      
-                      // alert('Please shorten your job name to less than 15 characters.');
                       event.preventDefault();
                       event.stopPropagation();
                     }
@@ -400,7 +378,6 @@
                     if ( /[^a-zA-Z0-9\-_/]/.test( jobname ) ) {
                       count += 1;
                       alertStr = alertStr.concat('Please only include alphanumeric characters, numbers, hyphens(-) and underscores(_). No whitespaces are allowed.')
-                      // alert('Please only include alphanumeric characters, numbers, hyphens(-) and underscore (_)');
                       event.preventDefault();
                       event.stopPropagation();
                     }

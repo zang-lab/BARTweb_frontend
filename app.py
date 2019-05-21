@@ -23,20 +23,20 @@ def index():
         # submit job button
         if 'submit_button' in request.form:
             # use user email or job name to generate unique job path
-            username = request.form['username']
+            useremail = request.form['useremail']
             jobname = request.form['jobname']
 
             if "userkey" in request.form:
                 user_key = request.form['userkey']
             else:
-                user_key = parseIO.generate_user_key(username, jobname)
+                user_key = parseIO.generate_user_key(useremail, jobname)
 
             # docker user path
             user_path = parseIO.init_project_path(user_key)
 
             # init user data
             user_data = {}
-            user_data['user_email'] = username
+            user_data['user_email'] = useremail
             user_data['user_job'] = jobname
             user_data['user_key'] = user_key
             user_data['user_path'] = user_path
@@ -71,8 +71,6 @@ def index():
                 if file.filename == '':	
                     flash('One of the files does not have a legal file name.')	
                     return redirect(request.url)
-                # make sure the suffix of filename in [.txt, .bam, .bed]
-                datatype = request.form['dataType']
                 if file: #and allowed_file(file.filename, allowed_extensions):	
                     filename = secure_filename(file.filename)	
                     upload_path = os.path.join(user_path, 'upload')	
@@ -93,8 +91,6 @@ def index():
                 if file.filename == '': 
                     flash('One of the files does not have a legal file name.')  
                     return redirect(request.url)
-                # make sure the suffix of filename in [.txt, .bam, .bed]
-                datatype = request.form['dataType']
                 if file: #and allowed_file(file.filename, allowed_extensions):    
                     filename = secure_filename(file.filename)   
                     upload_path = os.path.join(user_path, 'upload') 
@@ -106,15 +102,15 @@ def index():
             parseIO.init_user_config(user_path, user_data)
             parseIO.prepare_bart(user_data)
 
-            if username != "":  
-                logger.info("Init project: send e-mail to {} for {}".format(username, user_key))    
-                send_flag, send_msg = utils.send_email(username, user_key, 'Submit')    
+            if useremail != "":  
+                logger.info("Init project: send e-mail to {} for {}".format(useremail, user_key))    
+                send_flag, send_msg = utils.send_email(useremail, user_key, 'Submit')    
                 if send_flag:   
                     logger.info("Init project: " + send_msg)    
                 else:   
                     logger.error("Init project:" + send_msg)
             else:
-                logger.error("Init project: username is null")
+                logger.info("Init project: user does not have an e-mail")
 
             return redirect(url_for('get_result', user_key=user_key))
 
@@ -247,9 +243,6 @@ def download_result_file(userkey_filename):
     return send_from_directory(download_path, filename)
 
 # ===== for genelist/ChIPdata sample =====
-
-
-
 
 # download sample data
 @app.route('/sample/<sample_type>')
