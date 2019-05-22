@@ -15,9 +15,9 @@ before_install:
   - echo $DOCKER_PASSWORD | docker login -u "$DOCKER_USERNAME" --password-stdin 
 
 install:
-    docker build --no-cache -t somrc/bart-web:latest . || exit 1;
-    docker push somrc/bart-web:latest || exit 1;
-    aws sqs send-message --queue-url 'https://queue.amazonaws.com/474683445819/dcos-refresh' --message-body 'zanglab/bartweb.org' || exit 1;
+    docker build --no-cache -t somrc/bart-web:upgrade . || exit 1;
+    docker push somrc/bart-web:upgrade || exit 1;
+    aws sqs send-message --queue-url 'https://queue.amazonaws.com/474683445819/dcos-refresh' --message-body 'zanglab/bartweb2.uvadcos.io' || exit 1;
 
 notifications:
   email:
