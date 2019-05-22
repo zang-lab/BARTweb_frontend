@@ -34,7 +34,7 @@ def send_sqs_message(directory):
     send Amazon SQS message to the cloud
     '''
     sqs = boto3.resource('sqs', region_name='us-east-1')
-    queue = sqs.get_queue_by_name(QueueName='bart-web')
+    queue = sqs.get_queue_by_name(QueueName='bart-web2')
     response = queue.send_message(MessageBody='BART submission', MessageAttributes={
         'submission': {
             'StringValue': directory,
