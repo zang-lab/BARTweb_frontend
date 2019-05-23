@@ -67,7 +67,7 @@ def init_project_path(user_key):
         with open(user_log_file_path, 'w'): pass
 
     logger.info("Init project: send user key to Amazon SQS...")
-    utils.send_sqs_message(user_key)  # TODO: uncomment for online testing
+    #utils.send_sqs_message(user_key)  # TODO: uncomment for online testing
 
     return user_path
 
@@ -163,7 +163,10 @@ def generate_results(user_data):
     results['user_conf']['Job_key'] = user_data['user_key']
     results['user_conf']['Species'] = user_data['assembly']
     results['user_conf']['Input_data_type'] = user_data['dataType']
-    results['user_conf']['Input_data'] = user_data['files']
+    #this line is the file name in our own filesystem, does not need to show to user
+    #results['user_conf']['Input_data'] = user_data['files']
+    #this is the actrual file name that the user uploaded
+    results['user_conf']['Input_data'] = user_data['original_input']
     results['done'] = is_bart_done(user_data)
 
     if results['done']:

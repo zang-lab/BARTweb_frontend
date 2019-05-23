@@ -48,16 +48,10 @@
           <p><strong>Species</strong>: Currently, only human (hg38) and mouse (mm10) genomes are supported. </p>
           <p><strong>Input data type</strong>: A gene list has to be official gene symbols in text format. ChIP-seq data can be mapped reads in both BAM and BED format. Please make sure your ChIP-seq data are mapped to the correct genome version (hg38 or mm10).</p>
           <p>If you leave an e-mail address, BARTweb will send you e-mail notifications about the job key, job status, and result URL.</p>
-          <p>Once you press the Submit button, BARTweb will redirect you to the key demonstration page. </p>
+          <p>Once you press the Submit button, BARTweb will redirect you to the result page. </p>
           <br>
-          <h5>After submitting a job,</h5>
-          <h5>Copy your key or redirect to the result page</h5>
-          <p><img src="{{ url_for('static', filename='bartweb_key_page.png') }}" alt='bartweb_key_page' referrerPolicy='no-referrer' width="1000"/></p>
-          <p>In Key page, you can either click the Copy Key button to copy your job key to the clipboard and paste it somewhere for your record or click the Get your result link to redirect you to the result page and wait until the job completes. </p>
-          <p>Usually, a job will take 1-2 hours to run. You can always click the Result button on the navigation bar and use your key to get your result or the job status.</p>
-          <br>
-          <h5>Job processing page</h5>
-          <p>If your job is not finished running, the title will indicate still running status with a processing log presented in a text area; if the job is failed running, the title will indicate ends with error with the processing log indicating the error. If you are not sure why your job ends with error, please contact <a href='wm9tr@virginia.edu'>us</a> with your job key for more information.</p>
+          <h5>Result page</h5>
+          <p>Usually, a job will take 10 minutes to run. You can always click the Result button on the navigation bar and use your key to get your result or the job status. If your job is not finished running, the title will indicate still running status with a processing log presented in a text area. You can click the Copy Key button to copy your job key to the clipboard and paste it somewhere for your record. If the job is failed, the title will indicate ends with error with the processing log indicating the error. If you are not sure why your job ends with error, please contact <a href='wm9tr@virginia.edu'>us</a> with your job key for more information.</p>
           <p>If you want to share your result with others, you can send them the result link URL. Anyone can open and view an analysis result with the link URL or a job key. </p>
           <p>If your job is done successfully, the analysis result can be retrieved with the job key anytime within 180 days after the job submission. </p>
           <br>
