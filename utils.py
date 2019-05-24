@@ -54,8 +54,10 @@ def send_email(user_mail, user_key, email_type):
     '''
 
     # TODO: encryot
-    HOST_ADDRESS = os.environ.get("HOST_ADDRESS")
-    PASSWORD = os.environ.get("PASSWORD")
+    #HOST_ADDRESS = os.environ.get("HOST_ADDRESS")
+    #PASSWORD = os.environ.get("PASSWORD")
+    HOST_ADDRESS = 'zanglab.service@gmail.com'
+    PASSWORD = 'ZangLab2018'
 
     if HOST_ADDRESS == None or PASSWORD == None:
         return False, "errors in getting email address and password from environment.."

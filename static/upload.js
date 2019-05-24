@@ -3,7 +3,7 @@ $(document).ready(function() {
 	$('#inputForm').on('submit', function(event) {
 
 		//If the input data type is gene list
-		var dataType = $("input[name=dataType]").filter(":checked").val()
+		var dataType = $('select[name=dataType]').val()
 		if (dataType === "Geneset" ){
 			return
 		}
@@ -21,7 +21,7 @@ $(document).ready(function() {
 		var userEmail = document.getElementById('useremail').value;
 		var jobName = document.getElementById('jobname').value;
 		var species = $("input[name=species]").filter(":checked").val();
-		var dataType = $("input[name=dataType]").filter(":checked").val();
+		var dataType = $('select[name=dataType]').val();
 
  		formData.append("submit_button", "predict_data");
 		formData.append("useremail", userEmail);
