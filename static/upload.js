@@ -7,6 +7,10 @@ $(document).ready(function() {
 		if (dataType === "Geneset" ){
 			return
 		}
+		//If the input profile type is empty
+		if (dataType=='ChIP-seq' && document.getElementById('uploadFilesProfile').value == "") {
+            return
+        }
 
 		// will not preform redirect(url_for('get_result', user_key=user_key))
 		event.preventDefault();

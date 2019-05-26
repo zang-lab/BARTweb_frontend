@@ -116,7 +116,7 @@
                 <p class="mb-3" id="assembly"><b>Input type:</b></p>
               </div>
               <div class="col-md-10 mb-3" data-step="2" data-intro="And choose the data type you are going to upload.">
-                <select name="dataType">
+                <select id=data_type name="dataType">
                   <option id="genelist" value="Geneset">Genelist</option>
                   <option id="ChIP-seq" value="ChIP-seq">ChIP-seq data</option>
                 </select> 
@@ -314,7 +314,7 @@
                 var alertStr = "";
 
                 // check whether gene list button was checked and whether there is value under this condition
-                if (document.getElementById('genelist').checked && document.getElementById('geneFile').checked) { 
+                if (document.getElementById('data_type').value=='Geneset' && document.getElementById('geneFile').checked) { 
                   var fileElement = document.getElementById('uploadFilesGenelist');
                     if ( fileElement.value == "") {
                       count += 1;
@@ -322,7 +322,7 @@
                     } 
                 }
 
-                if (document.getElementById('genelist').checked && document.getElementById('geneData').checked) { 
+                if (document.getElementById('data_type').value=='Geneset' && document.getElementById('geneData').checked) { 
                     var dataElement = document.getElementById('uploadList');
                     if ( dataElement.value == "") {
                       count += 1;
@@ -330,7 +330,7 @@
                     } 
                 }
 
-                if (document.getElementById('ChIP-seq').checked && document.getElementById('uploadFilesProfile').value == "") {
+                if (document.getElementById('data_type').value=='ChIP-seq' && document.getElementById('uploadFilesProfile').value == "") {
                   count += 1;
                   alertStr = alertStr.concat('Please upload your ChIP-seq reads file.\n');
                 }
@@ -352,7 +352,7 @@
                 form.classList.add('was-validated');
 
                 // check user uploaded gene counts in textarea
-                if (document.getElementById('genelist').checked && document.getElementById('geneData').checked) { 
+                if (document.getElementById('data_type').value=='Geneset' && document.getElementById('geneData').checked) { 
                   var dataElement = document.getElementById('uploadList');
                   var dataLength = dataElement.value.split("\n").length;
                   if (dataLength < 100) {
