@@ -82,6 +82,24 @@ def index():
                     user_data['files'] = filename # only save file name, since the uploaded path is always the same
                     user_data['original_input'] = secure_filename(file.filename)
             
+            # validate upload file and write fine name and file path into config in the case of scored bed
+            if request.form['dataType'] == 'regions':
+                if 'uploadFilesRegions' not in request.files:   
+                    flash('Please choose a file')   
+                    return redirect(request.url)
+                file = request.files['uploadFilesRegions']
+                if file.filename == '': 
+                    flash('One of the files does not have a legal file name.')  
+                    return redirect(request.url)
+                if file:
+                    filename = secure_filename(file.filename)   
+                    upload_path = os.path.join(user_path, 'upload') 
+                    filename = "Region.bed"
+                    filename_abs_path = os.path.join(upload_path, filename) 
+                    file.save(filename_abs_path)    
+                    user_data['files'] = filename # only save file name, since the uploaded path is always the same
+                    user_data['original_input'] = secure_filename(file.filename)
+
             # validate upload file and write fine name and file path into config in the case of genelist input
             if request.form['dataType'] == 'Geneset' and request.form['geneType'] == 'geneFile': 
                 # process what user has uploaded    

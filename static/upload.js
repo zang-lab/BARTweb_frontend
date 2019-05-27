@@ -11,15 +11,25 @@ $(document).ready(function() {
 		if (dataType=='ChIP-seq' && document.getElementById('uploadFilesProfile').value == "") {
             return
         }
+        if (dataType=='regions' && document.getElementById('uploadFilesRegions').value == "") {
+            return
+        }
 
 		// will not preform redirect(url_for('get_result', user_key=user_key))
 		event.preventDefault();
 
 		var formData = new FormData();
 		// append file object to formData
-		var fileInput = document.getElementById('uploadFilesProfile');
- 		var file = fileInput.files[0];
-		formData.append('uploadFilesProfile',file);
+		if (dataType=='ChIP-seq') {
+            var fileInput = document.getElementById('uploadFilesProfile');
+ 			var file = fileInput.files[0];
+			formData.append('uploadFilesProfile',file);
+        }
+		if (dataType=='regions') {
+            var fileInput = document.getElementById('uploadFilesRegions');
+ 			var file = fileInput.files[0];
+			formData.append('uploadFilesRegions',file);
+        }
 
 		// get form data and append to formData
 		var userEmail = document.getElementById('useremail').value;

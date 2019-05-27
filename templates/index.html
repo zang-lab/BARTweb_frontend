@@ -119,6 +119,7 @@
                 <select id=data_type name="dataType">
                   <option id="genelist" value="Geneset">Genelist</option>
                   <option id="ChIP-seq" value="ChIP-seq">ChIP-seq data</option>
+                  <option id="regions" value="regions">Region set</option>
                 </select> 
                 <align id="sample" class="col-md-9 mb-3">
                   <a href="/sample/genelist" download>
@@ -165,18 +166,20 @@
                       <input type="radio" id="geneFile" name="geneType" value="geneFile" class="custom-control-input" checked required>
                       <label class="custom-control-label" for="geneFile">Upload: </label>
                     </div>
-                    <p id="ChIPFile" hidden>Upload: </p>
+                    <p id="uploadFile" hidden>Upload: </p>
                   </div>
                   <div class="col-md-9">
 
                     <!-- place to upload file(genelist/profile), by defult hidden -->
                     <input id="uploadFilesGenelist" name="uploadFilesGenelist" type="file" accept=".txt" required>
                     <input id="uploadFilesProfile" name="uploadFilesProfile" type="file" accept=".bam,.bed" hidden>
+                    <input id="uploadFilesRegions" name="uploadFilesRegions" type="file" accept=".bed" hidden>
                     <div id="progressBar" class="progress-bar" role="progressbar" aria-valuenow="0" hidden aria-valuemin="0" aria-valuemax="100" style="width: 0%;">0%</div>
                      <!-- not for multiple, only allow one file -->
 
                     <p id="geneFileType">Genelist must be <b>official gene symbol</b> in .txt format (each name in a row). More than 100 genes is recommended.</p>
                     <p id="chipFileType" hidden>ChIP-seq must be <b>mapped reads data files</b> in .bed/.bam format in the corresponding genome assembly.</p>
+                    <p id="regionsFileType" hidden>Region set must be <b>scored bed file</b> in the corresponding genome assembly with the score of this profile at 5th column.</p>
                   </div>
                 </div>
 
@@ -335,6 +338,11 @@
                   alertStr = alertStr.concat('Please upload your ChIP-seq reads file.\n');
                 }
 
+                if (document.getElementById('data_type').value=='regions' && document.getElementById('uploadFilesRegions').value == "") {
+                  count += 1;
+                  alertStr = alertStr.concat('Please upload your regionset bed file.\n');
+                }
+
                 // if e-mail name is not null, check and alert
                 var emailText = document.getElementById('useremail').value;
                 if (emailText != "" && !emailText.includes('@')) {
@@ -404,21 +412,22 @@
       {
         case 'ChIP-seq':
           $('#progressBar').prop("hidden", true);
-
           $('#sample').prop('hidden', true);
 
           $('#uploadFilesProfile').removeAttr('hidden');
           $('#uploadFilesGenelist').prop('hidden', true);
+          $('#uploadFilesRegions').prop('hidden', true);
 
           $('#uploadFilesGenelist').removeAttr('required');
           $('#uploadFilesProfile').prop('required', true);
 
           $('#geneDataRadio').prop("hidden", true);
           $('#geneFileRadio').prop("hidden", true);
-          $('#ChIPFile').removeAttr('hidden');
+          $('#uploadFile').removeAttr('hidden');
 
           // related to upload file type
           $('#geneFileType').prop("hidden", true);
+          $('#regionsFileType').prop("hidden", true);
           $('#chipFileType').removeAttr('hidden');
 
           // enable upload files if diabled due to geneFile choice
@@ -431,25 +440,29 @@
           // clear genelist data
           $('#uploadFilesGenelist').val('');
           $('#uploadList').val('');
+          $('#uploadFilesRegions').val('');
           break;
+
         case 'Geneset':
           $('#progressBar').prop("hidden", true);
-
           $('#sample').removeAttr('hidden');
 
           $('#uploadFilesGenelist').removeAttr('hidden');
           $('#uploadFilesProfile').prop("hidden", true);
+          $('#uploadFilesRegions').prop('hidden', true);
 
           $('#uploadFilesProfile').removeAttr('required');
           $('#uploadFilesGenelist').prop('required', true);
 
           $('#geneDataRadio').removeAttr('hidden');
           $('#geneFileRadio').removeAttr('hidden');
-          $('#ChIPFile').prop("hidden", true);
+          $('#uploadFile').prop("hidden", true);
 
           // related to upload file type
           $('#geneFileType').removeAttr('hidden');
+          $('#regionsFileType').prop("hidden", true);
           $('#chipFileType').prop("hidden", true);
+
 
           // change back following input data choices
           $('input:radio[name=geneType]')[0].checked = true;
@@ -461,7 +474,40 @@
 
           // clear ChIP-seq data
           $('#uploadFilesProfile').val('');
+          $('#uploadFilesRegions').val('');
           break;
+
+        case 'regions':
+          $('#progressBar').prop("hidden", true);
+          $('#sample').prop('hidden', true);
+
+          $('#uploadFilesProfile').prop('hidden', true);
+          $('#uploadFilesGenelist').prop('hidden', true);
+          $('#uploadFilesRegions').removeAttr('hidden');
+
+          $('#uploadFilesGenelist').removeAttr('required');
+          $('#uploadFilesProfile').removeAttr('required');
+          $('#uploadFilesRegions').prop('required', true);
+
+          $('#geneDataRadio').prop("hidden", true);
+          $('#geneFileRadio').prop("hidden", true);
+          $('#uploadFile').removeAttr('hidden');
+
+          $('#geneFileType').prop("hidden", true);
+          $('#chipFileType').prop("hidden", true);
+          $('#regionsFileType').removeAttr('hidden');
+
+          $('#uploadFilesRegions').prop('disabled', false);
+          $('#uploadFilesRegions').attr("accept", ".bed");
+
+          $('#uploadList').prop('disabled', true);
+          $('#uploadList').css('background-color' , '#e9ecef');
+
+          $('#uploadFilesProfile').val('');
+          $('#uploadFilesGenelist').val('');
+          $('#uploadList').val('');
+
+        break;
       }
     });
     </script>

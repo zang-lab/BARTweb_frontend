@@ -127,6 +127,8 @@ def prepare_bart(user_data):
             excutable = 'python3 bin/bart2 profile -f bed -i '+bart_input+' -s '+bart_species+' --outdir '+bart_output_dir+' > {} 2>&1 '.format(os.path.join(user_data['user_path'],'log/mb_pipe.log')) +'\n'
         else:
             logger.error("illegal file extension")
+    if user_data['dataType'] == 'regions':
+        excutable = 'python3 bin/bart2 region -i '+bart_input+' -s '+bart_species+' --outdir '+bart_output_dir+' > {} 2>&1 '.format(os.path.join(user_data['user_path'],'log/mb_pipe.log'))+'\n'
     excute_send_email = 'python3 send_finish_email.py {}\n'.format(user_data['user_path'])
     excutable_file = os.path.join(user_data['user_path'], 'run_bart.sh')
     with open(excutable_file, 'w') as fopen:
@@ -284,7 +286,7 @@ def is_bart_done(user_data):
                 count = count+1
         if count==4:
             done = True
-    if user_data['dataType'] == 'ChIP-seq':
+    if user_data['dataType'] == 'ChIP-seq' or user_data['dataType'] == 'regions':
         for file in files:
             if utils.is_file_zero(os.path.join(bart_output_dir, file)):
                 continue
