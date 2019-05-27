@@ -170,7 +170,8 @@ def generate_results(user_data):
     #this is the actrual file name that the user uploaded
     results['user_conf']['Input_data'] = user_data['original_input']
     results['done'] = is_bart_done(user_data)
-
+    if 'error' in user_data:
+        results['error'] = user_data['error']
     if results['done']:
         bart_file_results, bart_table_results = generate_bart_file_results(user_data)
         results.update(bart_file_results)
