@@ -32,6 +32,7 @@ RUN a2enmod headers
 
 COPY  . /BARTweb/
 
+# feed apache to docker
 RUN a2dissite 000-default.conf
 RUN a2ensite apache-flask.conf
 
@@ -46,5 +47,6 @@ RUN touch log/bartweb.log
 RUN chown -R www-data:www-data log
 RUN chmod -R 775 log
 
+#run apache, this directory is present with installation of apache
 CMD /usr/sbin/apache2ctl -D FOREGROUND
 
