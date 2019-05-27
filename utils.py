@@ -12,6 +12,7 @@ from email.mime.text import MIMEText
 # for logging
 from logging.handlers import RotatingFileHandler
 
+# create directory
 def create_dir(directory):
     '''
     create directory if not exist
