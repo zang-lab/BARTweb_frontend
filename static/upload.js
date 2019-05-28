@@ -7,7 +7,11 @@ $(document).ready(function() {
 		if (dataType === "Geneset" ){
 			return
 		}
-		if (dataType === "HiC" ){
+		var bool1 = document.getElementById('uploadFilesIndex1').value == ""
+		var bool2 = document.getElementById('uploadFilesIndex2').value == ""
+		var bool3 = document.getElementById('uploadFilesMatrix1').value == ""
+		var bool4 = document.getElementById('uploadFilesMatrix2').value == ""
+		if (dataType === "HiC" && (bool1||bool2||bool3||bool4)){
 			return
 		}
 		//If the input profile type is empty
@@ -32,6 +36,20 @@ $(document).ready(function() {
             var fileInput = document.getElementById('uploadFilesRegions');
  			var file = fileInput.files[0];
 			formData.append('uploadFilesRegions',file);
+        }
+        if (dataType=='HiC') {
+            var index1Input = document.getElementById('uploadFilesIndex1');
+	 		var index1 = index1Input.files[0];
+			formData.append('uploadFilesIndex1',index1);
+			var matrix1Input = document.getElementById('uploadFilesMatrix1');
+	 		var matrix1 = matrix1Input.files[0];
+			formData.append('uploadFilesMatrix1',matrix1);
+			var index2Input = document.getElementById('uploadFilesIndex2');
+	 		var index2 = index2Input.files[0];
+			formData.append('uploadFilesIndex2',index2);
+			var matrix2Input = document.getElementById('uploadFilesMatrix2');
+	 		var matrix2 = matrix2Input.files[0];
+			formData.append('uploadFilesMatrix2',matrix2);
         }
 
 		// get form data and append to formData
@@ -61,6 +79,7 @@ $(document).ready(function() {
 				xhr.upload.addEventListener('progress', function(e) {
 					console.log(e.lengthComputable)
 					$('#progressBar').removeAttr('hidden');
+					$('#HiCLabel5').prop('hidden', true);
 					if (e.lengthComputable) {
 						// console.log('Bytes Loaded: ' + e.loaded);
 						// console.log('Total Size: ' + e.total);

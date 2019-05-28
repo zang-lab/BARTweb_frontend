@@ -152,9 +152,6 @@
                     <input id="uploadFilesGenelist" name="uploadFilesGenelist" type="file" accept=".txt" required>
                     <input id="uploadFilesProfile" name="uploadFilesProfile" type="file" accept=".bam,.bed" hidden>
                     <input id="uploadFilesRegions" name="uploadFilesRegions" type="file" accept=".bed" hidden>
-                    <div id="progressBar" class="progress-bar" role="progressbar" aria-valuenow="0" hidden aria-valuemin="0" aria-valuemax="100" style="width: 0%;">0%</div>
-
-                    
                     <input id="uploadFilesIndex1" name="uploadFilesIndex1" type="file" accept=".bed" hidden>
                     <label id="HiCLabel1" hidden><b>Index file of control Hi-C sample</b></label>
                     <input id="uploadFilesMatrix1" name="uploadFilesMatrix1" type="file" accept=".matrix" hidden>
@@ -163,6 +160,7 @@
                     <label id="HiCLabel3" hidden><b>Index file of treatment Hi-C sample</b></label>
                     <input id="uploadFilesMatrix2" name="uploadFilesMatrix2" type="file" accept=".matrix" hidden>
                     <label id="HiCLabel4" hidden><b>Matrix file of treatment Hi-C sample</b></label>
+                    <div id="progressBar" class="progress-bar" role="progressbar" aria-valuenow="0" hidden aria-valuemin="0" aria-valuemax="100" style="width: 0%;">0%</div>
                     <br id="HiCLabel5" hidden></br>
                      <!-- not for multiple, only allow one file -->
 
@@ -243,7 +241,6 @@
     <!-- for file upload bar -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
     <script src="{{ url_for('static', filename='upload.js') }}"></script>
-    
 
 
     <script type="text/javascript">
