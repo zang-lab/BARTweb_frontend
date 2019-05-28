@@ -120,6 +120,7 @@
                   <option id="genelist" value="Geneset">Genelist</option>
                   <option id="ChIP-seq" value="ChIP-seq">ChIP-seq data</option>
                   <option id="regions" value="regions">Region set</option>
+                  <option id="HiC" value="HiC">Hi-C</option>
                 </select> 
                 <align id="sample" class="col-md-9 mb-3">
                   <a href="/sample/genelist" download>
@@ -127,30 +128,7 @@
                   </a>
                   <img src="{{ url_for('static', filename='question-mark.svg') }}" style="width:16px; vertical-align:middle" title="This sample gene list file contains down-regulated genes upon shRNA knock-down of POU5F1 in human embryonic stem cell line H1. You can download it, upload by yourself and submit your job, or refer to the pre-run result."/>
                 </align>
-         <!--        <div class="row">
-                  <div class="col-md-3 mb-3">
-                    <div class="custom-control custom-radio">
-                      <input type="radio" id="genelist" name="dataType" value="Geneset" class="custom-control-input" checked required>
-                      <label class="custom-control-label" for="genelist">Genelist</label>
-                    </div>
-                  </div>
-                  <div class="col-md-9 mb-3">
-                      <a href="/sample/genelist" download>
-                        <button class="btn btn-lg btn-secondary btn-outline-primary btn-sm" type="button">Download hg38 gene list sample</button>
-                      </a>
-                      <img src="{{ url_for('static', filename='question-mark.svg') }}" style="width:16px; vertical-align:middle" title="This sample gene list file contains down-regulated genes upon shRNA knock-down of POU5F1 in human embryonic stem cell line H1. You can download it, upload by yourself and submit your job, or refer to the pre-run result."/>
-                  </div>
-                  
-                </div>
-                <div class="row">
-                  <div class="col-md-12 mb-3">
-                    <div class="custom-control custom-radio">
-                      <input type="radio" id="ChIP-seq" name="dataType" value="ChIP-seq" class="custom-control-input" required>
-                      <label class="custom-control-label" for="ChIP-seq">ChIP-seq data</label>
-                    </div>
-                  </div>
-                  
-                </div> -->
+         
               </div>
             </div>
 
@@ -175,11 +153,23 @@
                     <input id="uploadFilesProfile" name="uploadFilesProfile" type="file" accept=".bam,.bed" hidden>
                     <input id="uploadFilesRegions" name="uploadFilesRegions" type="file" accept=".bed" hidden>
                     <div id="progressBar" class="progress-bar" role="progressbar" aria-valuenow="0" hidden aria-valuemin="0" aria-valuemax="100" style="width: 0%;">0%</div>
+
+                    
+                    <input id="uploadFilesIndex1" name="uploadFilesIndex1" type="file" accept=".bed" hidden>
+                    <label id="HiCLabel1" hidden><b>Index file of control Hi-C sample</b></label>
+                    <input id="uploadFilesMatrix1" name="uploadFilesMatrix1" type="file" accept=".matrix" hidden>
+                    <label id="HiCLabel2" hidden><b>Matrix file of control Hi-C sample</b></label>
+                    <input id="uploadFilesIndex2" name="uploadFilesIndex2" type="file" accept=".bed" hidden>
+                    <label id="HiCLabel3" hidden><b>Index file of treatment Hi-C sample</b></label>
+                    <input id="uploadFilesMatrix2" name="uploadFilesMatrix2" type="file" accept=".matrix" hidden>
+                    <label id="HiCLabel4" hidden><b>Matrix file of treatment Hi-C sample</b></label>
+                    <br id="HiCLabel5" hidden></br>
                      <!-- not for multiple, only allow one file -->
 
                     <p id="geneFileType">Genelist must be <b>official gene symbol</b> in .txt format (each name in a row). More than 100 genes is recommended.</p>
                     <p id="chipFileType" hidden>ChIP-seq must be <b>mapped reads data files</b> in .bed/.bam format in the corresponding genome assembly.</p>
                     <p id="regionsFileType" hidden>Region set must be <b>scored bed file</b> in the corresponding genome assembly with the score of this profile at 5th column (starting from 1).</p>
+                    <p id="HiCFileType" hidden>Input for differential HiC bart are <b>matrix (.matrix) and index (.bed) for control and treatment HiC samples in cooler format</b> in the corresponding genome assembly.</p>
                   </div>
                 </div>
 
@@ -343,6 +333,11 @@
                   alertStr = alertStr.concat('Please upload your regionset bed file.\n');
                 }
 
+                if (document.getElementById('data_type').value=='HiC' && (document.getElementById('uploadFilesIndex1').value == "" || document.getElementById('uploadFilesIndex2').value == "" || document.getElementById('uploadFilesMatrix1').value == "" || document.getElementById('uploadFilesMatrix2').value == "")) {
+                  count += 1;
+                  alertStr = alertStr.concat('Please upload your all required HiC files.\n');
+                }
+
                 // if e-mail name is not null, check and alert
                 var emailText = document.getElementById('useremail').value;
                 if (emailText != "" && !emailText.includes('@')) {
@@ -417,8 +412,22 @@
           $('#uploadFilesProfile').removeAttr('hidden');
           $('#uploadFilesGenelist').prop('hidden', true);
           $('#uploadFilesRegions').prop('hidden', true);
+          $('#uploadFilesMatrix1').prop('hidden', true);
+          $('#uploadFilesMatrix2').prop('hidden', true);
+          $('#uploadFilesIndex1').prop('hidden', true);
+          $('#uploadFilesIndex2').prop('hidden', true);
+          $('#HiCLabel1').prop('hidden', true);
+          $('#HiCLabel2').prop('hidden', true);
+          $('#HiCLabel3').prop('hidden', true);
+          $('#HiCLabel4').prop('hidden', true);
+          $('#HiCLabel5').prop('hidden', true);
 
+          $('#uploadFilesMatrix1').removeAttr('required');
+          $('#uploadFilesMatrix2').removeAttr('required');
+          $('#uploadFilesIndex1').removeAttr('required');
+          $('#uploadFilesIndex2').removeAttr('required');
           $('#uploadFilesGenelist').removeAttr('required');
+          $('#uploadFilesRegions').removeAttr('required');
           $('#uploadFilesProfile').prop('required', true);
 
           $('#geneDataRadio').prop("hidden", true);
@@ -426,6 +435,7 @@
           $('#uploadFile').removeAttr('hidden');
 
           // related to upload file type
+          $('#HiCFileType').prop("hidden", true);
           $('#geneFileType').prop("hidden", true);
           $('#regionsFileType').prop("hidden", true);
           $('#chipFileType').removeAttr('hidden');
@@ -434,13 +444,14 @@
           $('#uploadFilesProfile').prop('disabled', false);
           $('#uploadFilesProfile').attr("accept", ".bam,.bed");
 
-          $('#uploadList').prop('disabled', true);
-          $('#uploadList').css('background-color' , '#e9ecef');
-
           // clear genelist data
           $('#uploadFilesGenelist').val('');
           $('#uploadList').val('');
           $('#uploadFilesRegions').val('');
+          $('#uploadFilesMatrix1').val('');
+          $('#uploadFilesMatrix2').val('');
+          $('#uploadFilesIndex1').val('');
+          $('#uploadFilesIndex2').val('');
           break;
 
         case 'Geneset':
@@ -450,8 +461,22 @@
           $('#uploadFilesGenelist').removeAttr('hidden');
           $('#uploadFilesProfile').prop("hidden", true);
           $('#uploadFilesRegions').prop('hidden', true);
+          $('#uploadFilesMatrix1').prop('hidden', true);
+          $('#uploadFilesMatrix2').prop('hidden', true);
+          $('#uploadFilesIndex1').prop('hidden', true);
+          $('#uploadFilesIndex2').prop('hidden', true);
+          $('#HiCLabel1').prop('hidden', true);
+          $('#HiCLabel2').prop('hidden', true);
+          $('#HiCLabel3').prop('hidden', true);
+          $('#HiCLabel4').prop('hidden', true);
+          $('#HiCLabel5').prop('hidden', true);
 
+          $('#uploadFilesMatrix1').removeAttr('required');
+          $('#uploadFilesMatrix2').removeAttr('required');
+          $('#uploadFilesIndex1').removeAttr('required');
+          $('#uploadFilesIndex2').removeAttr('required');
           $('#uploadFilesProfile').removeAttr('required');
+          $('#uploadFilesRegions').removeAttr('required');
           $('#uploadFilesGenelist').prop('required', true);
 
           $('#geneDataRadio').removeAttr('hidden');
@@ -459,6 +484,7 @@
           $('#uploadFile').prop("hidden", true);
 
           // related to upload file type
+          $('#HiCFileType').prop("hidden", true);
           $('#geneFileType').removeAttr('hidden');
           $('#regionsFileType').prop("hidden", true);
           $('#chipFileType').prop("hidden", true);
@@ -475,6 +501,10 @@
           // clear ChIP-seq data
           $('#uploadFilesProfile').val('');
           $('#uploadFilesRegions').val('');
+          $('#uploadFilesMatrix1').val('');
+          $('#uploadFilesMatrix2').val('');
+          $('#uploadFilesIndex1').val('');
+          $('#uploadFilesIndex2').val('');
           break;
 
         case 'regions':
@@ -484,7 +514,20 @@
           $('#uploadFilesProfile').prop('hidden', true);
           $('#uploadFilesGenelist').prop('hidden', true);
           $('#uploadFilesRegions').removeAttr('hidden');
+          $('#uploadFilesMatrix1').prop('hidden', true);
+          $('#uploadFilesMatrix2').prop('hidden', true);
+          $('#uploadFilesIndex1').prop('hidden', true);
+          $('#uploadFilesIndex2').prop('hidden', true);
+          $('#HiCLabel1').prop('hidden', true);
+          $('#HiCLabel2').prop('hidden', true);
+          $('#HiCLabel3').prop('hidden', true);
+          $('#HiCLabel4').prop('hidden', true);
+          $('#HiCLabel5').prop('hidden', true);
 
+          $('#uploadFilesMatrix1').removeAttr('required');
+          $('#uploadFilesMatrix2').removeAttr('required');
+          $('#uploadFilesIndex1').removeAttr('required');
+          $('#uploadFilesIndex2').removeAttr('required');
           $('#uploadFilesGenelist').removeAttr('required');
           $('#uploadFilesProfile').removeAttr('required');
           $('#uploadFilesRegions').prop('required', true);
@@ -493,6 +536,7 @@
           $('#geneFileRadio').prop("hidden", true);
           $('#uploadFile').removeAttr('hidden');
 
+          $('#HiCFileType').prop("hidden", true);
           $('#geneFileType').prop("hidden", true);
           $('#chipFileType').prop("hidden", true);
           $('#regionsFileType').removeAttr('hidden');
@@ -500,14 +544,63 @@
           $('#uploadFilesRegions').prop('disabled', false);
           $('#uploadFilesRegions').attr("accept", ".bed");
 
-          $('#uploadList').prop('disabled', true);
-          $('#uploadList').css('background-color' , '#e9ecef');
+          $('#uploadFilesProfile').val('');
+          $('#uploadFilesGenelist').val('');
+          $('#uploadList').val('');
+          $('#uploadFilesMatrix1').val('');
+          $('#uploadFilesMatrix2').val('');
+          $('#uploadFilesIndex1').val('');
+          $('#uploadFilesIndex2').val('');
+          break;
+        
+        case 'HiC':
+          $('#progressBar').prop("hidden", true);
+          $('#sample').prop('hidden', true);
+
+          $('#uploadFilesProfile').prop('hidden', true);
+          $('#uploadFilesGenelist').prop('hidden', true);
+          $('#uploadFilesRegions').prop('hidden', true);
+          $('#uploadFilesMatrix1').removeAttr('hidden');
+          $('#uploadFilesMatrix2').removeAttr('hidden');
+          $('#uploadFilesIndex1').removeAttr('hidden');
+          $('#uploadFilesIndex2').removeAttr('hidden');
+          $('#HiCLabel1').removeAttr('hidden');
+          $('#HiCLabel2').removeAttr('hidden');
+          $('#HiCLabel3').removeAttr('hidden');
+          $('#HiCLabel4').removeAttr('hidden');
+          $('#HiCLabel5').removeAttr('hidden');
+
+          $('#uploadFilesMatrix1').prop('required', true);
+          $('#uploadFilesMatrix2').prop('required', true);
+          $('#uploadFilesIndex1').prop('required', true);
+          $('#uploadFilesIndex2').prop('required', true);
+          $('#uploadFilesGenelist').removeAttr('required');
+          $('#uploadFilesRegions').removeAttr('required');
+          $('#uploadFilesProfile').removeAttr('required');
+
+          $('#geneDataRadio').prop("hidden", true);
+          $('#geneFileRadio').prop("hidden", true);
+          $('#uploadFile').removeAttr('hidden');
+
+          $('#geneFileType').prop("hidden", true);
+          $('#regionsFileType').prop("hidden", true);
+          $('#chipFileType').prop("hidden", true);
+          $('#HiCFileType').removeAttr('hidden');
+
+          $('#uploadFilesMatrix1').prop('disabled', false);
+          $('#uploadFilesMatrix1').attr("accept", ".matrix");
+          $('#uploadFilesMatrix2').prop('disabled', false);
+          $('#uploadFilesMatrix2').attr("accept", ".matrix");
+          $('#uploadFilesIndex1').prop('disabled', false);
+          $('#uploadFilesIndex1').attr("accept", ".bed");
+          $('#uploadFilesIndex2').prop('disabled', false);
+          $('#uploadFilesIndex2').attr("accept", ".bed");
 
           $('#uploadFilesProfile').val('');
           $('#uploadFilesGenelist').val('');
           $('#uploadList').val('');
+          $('#uploadFilesRegions').val('');
 
-        break;
       }
     });
     </script>

@@ -7,6 +7,9 @@ $(document).ready(function() {
 		if (dataType === "Geneset" ){
 			return
 		}
+		if (dataType === "HiC" ){
+			return
+		}
 		//If the input profile type is empty
 		if (dataType=='ChIP-seq' && document.getElementById('uploadFilesProfile').value == "") {
             return
