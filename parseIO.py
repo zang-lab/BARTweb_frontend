@@ -114,7 +114,14 @@ def is_user_key_exists(user_key):
 
 def prepare_bart(user_data):
 
-    bart_input = os.path.join(user_data['user_path'], 'upload/' + user_data['files'])
+    if user_data['dataType'] != 'HiC':
+        bart_input = os.path.join(user_data['user_path'], 'upload/' + user_data['files'])
+    else:
+        bart_input = []
+        bart_input.append(os.path.join(user_data['user_path'], 'upload/' + user_data['control_index_file']))
+        bart_input.append(os.path.join(user_data['user_path'], 'upload/' + user_data['control_matrix_file']))
+        bart_input.append(os.path.join(user_data['user_path'], 'upload/' + user_data['treatment_index_file']))
+        bart_input.append(os.path.join(user_data['user_path'], 'upload/' + user_data['treatment_matrix_input']))
     bart_species = user_data['assembly']
     bart_output_dir = os.path.join(user_data['user_path'], 'download/')
     if user_data['dataType'] == 'Geneset':
@@ -129,6 +136,8 @@ def prepare_bart(user_data):
             logger.error("illegal file extension")
     if user_data['dataType'] == 'regions':
         excutable = 'python3 bin/bart2 region -i '+bart_input+' -s '+bart_species+' --outdir '+bart_output_dir+' > {} 2>&1 '.format(os.path.join(user_data['user_path'],'log/mb_pipe.log'))+'\n'
+    if user_data['dataType'] == 'HiC':
+        excutable = 'python3 bin/bart2 diffHiC -ic '+bart_input[0]+' -mc '+bart_input[1]+' -it '+bart_input[2]+' -mt '+bart_input[3]+' -s '+bart_species+' --outdir '+bart_output_dir+' > {} 2>&1 '.format(os.path.join(user_data['user_path'],'log/mb_pipe.log'))+'\n'
     excute_send_email = 'python3 send_finish_email.py {}\n'.format(user_data['user_path'])
     excutable_file = os.path.join(user_data['user_path'], 'run_bart.sh')
     with open(excutable_file, 'w') as fopen:
@@ -168,7 +177,13 @@ def generate_results(user_data):
     #this line is the file name in our own filesystem, does not need to show to user
     #results['user_conf']['Input_data'] = user_data['files']
     #this is the actrual file name that the user uploaded
-    results['user_conf']['Input_data'] = user_data['original_input']
+    if user_data['dataType'] != 'HiC':
+        results['user_conf']['Input_data'] = user_data['original_input']
+    else:
+        results['user_conf']['control_index_input'] = user_data['control_index_input']
+        results['user_conf']['control_matrix_input'] = user_data['control_matrix_input']
+        results['user_conf']['treatment_index_input'] = user_data['treatment_index_input']
+        results['user_conf']['treatment_matrix_input'] = user_data['treatment_matrix_input']
     results['done'] = is_bart_done(user_data)
     if 'error' in user_data:
         results['error'] = user_data['error']
@@ -287,7 +302,7 @@ def is_bart_done(user_data):
                 count = count+1
         if count==4:
             done = True
-    if user_data['dataType'] == 'ChIP-seq' or user_data['dataType'] == 'regions':
+    if user_data['dataType'] == 'ChIP-seq' or user_data['dataType'] == 'regions' or user_data['dataType'] == 'HiC':
         for file in files:
             if utils.is_file_zero(os.path.join(bart_output_dir, file)):
                 continue
