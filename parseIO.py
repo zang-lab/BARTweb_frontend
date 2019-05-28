@@ -137,7 +137,7 @@ def prepare_bart(user_data):
     if user_data['dataType'] == 'regions':
         excutable = 'python3 bin/bart2 region -i '+bart_input+' -s '+bart_species+' --outdir '+bart_output_dir+' > {} 2>&1 '.format(os.path.join(user_data['user_path'],'log/mb_pipe.log'))+'\n'
     if user_data['dataType'] == 'HiC':
-        excutable = 'python3 bin/bart2 diffHiC -ic '+bart_input[0]+' -mc '+bart_input[1]+' -it '+bart_input[2]+' -mt '+bart_input[3]+' -s '+bart_species+' --outdir '+bart_output_dir+' > {} 2>&1 '.format(os.path.join(user_data['user_path'],'log/mb_pipe.log'))+'\n'
+        excutable = 'python3 bin/bart2 diffHiC -ci '+bart_input[0]+' -cm '+bart_input[1]+' -ti '+bart_input[2]+' -tm '+bart_input[3]+' -s '+bart_species+' --outdir '+bart_output_dir+' > {} 2>&1 '.format(os.path.join(user_data['user_path'],'log/mb_pipe.log'))+'\n'
     excute_send_email = 'python3 send_finish_email.py {}\n'.format(user_data['user_path'])
     excutable_file = os.path.join(user_data['user_path'], 'run_bart.sh')
     with open(excutable_file, 'w') as fopen:
