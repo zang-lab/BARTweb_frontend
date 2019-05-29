@@ -7,17 +7,16 @@ branches:
 
 services:
   - docker
-# config the enviroment (where?) for building docker (there are also enviromental variables for travis? on travis CI site)
+
 before_install:
   - sudo pip install --upgrade pip
   - pip install --user awscli
   - export PATH=$PATH:$HOME/.local/bin
   - echo $DOCKER_PASSWORD | docker login -u "$DOCKER_USERNAME" --password-stdin 
-# build docker image onto the dockerhub, where DCOS retrives the image to build container 
+
 install:
     docker build --no-cache -t somrc/bart-web:upgrade . || exit 1;
     docker push somrc/bart-web:upgrade || exit 1;
-    #send a message to Neal's SQS for building to SomRC(DCOS) from dockerhub
     aws sqs send-message --queue-url 'https://queue.amazonaws.com/474683445819/dcos-refresh' --message-body 'zanglab/bartweb2' || exit 1;
 
 notifications:
