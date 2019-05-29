@@ -44,8 +44,8 @@ WORKDIR /BARTweb/
 # For log
 RUN mkdir -p usercase/log
 RUN touch usercase/log/bartweb.log
-RUN chown -R www-data:www-data log
-RUN chmod -R 775 log
+RUN chown -R www-data:www-data usercase/log
+RUN chmod -R 775 usercase/log
 
 #run apache, this directory is present with installation of apache
 CMD /usr/sbin/apache2ctl -D FOREGROUND
