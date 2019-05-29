@@ -42,8 +42,8 @@ EXPOSE 80
 WORKDIR /BARTweb/
 
 # For log
-RUN mkdir -p log
-RUN touch log/bartweb.log
+RUN mkdir -p usercase/log
+RUN touch usercase/log/bartweb.log
 RUN chown -R www-data:www-data log
 RUN chmod -R 775 log
 
