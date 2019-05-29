@@ -55,11 +55,9 @@ def send_email(user_mail, user_key, email_type):
     '''
 
     # TODO: encryot
-    #HOST_ADDRESS = os.environ.get("HOST_ADDRESS")
-    #PASSWORD = os.environ.get("PASSWORD")
-    HOST_ADDRESS = 'zanglab.service@gmail.com'
-    PASSWORD = 'ZangLab2018'
-
+    HOST_ADDRESS = os.environ.get("HOST_ADDRESS")
+    PASSWORD = os.environ.get("PASSWORD")
+    
     if HOST_ADDRESS == None or PASSWORD == None:
         return False, "errors in getting email address and password from environment.."
 
@@ -80,7 +78,7 @@ Thank you for using BART web!
 Here is your key: {}
 
 When the job is done, you can ge the results through this link: {}
-'''.format(user_key, 'http://bartweb.org/result?user_key='+user_key)
+'''.format(user_key, 'http://bartweb2.uvadcos.io/result?user_key='+user_key)
 
     # === when job finishes successfully
     if email_type == 'Done':
@@ -89,7 +87,7 @@ When the job is done, you can ge the results through this link: {}
 Congratulations! Your BART job is done!
 
 Please get the results through this link: {}
-'''.format('http://bartweb.org/result?user_key='+user_key)
+'''.format('http://bartweb2.uvadcos.io/result?user_key='+user_key)
 
     # === when job finishes with an error
     if email_type == 'Error':

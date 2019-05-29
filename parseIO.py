@@ -67,7 +67,7 @@ def init_project_path(user_key):
         with open(user_log_file_path, 'w'): pass
 
     logger.info("Init project: send user key to Amazon SQS...")
-    #utils.send_sqs_message(user_key)  # TODO: uncomment for online testing
+    utils.send_sqs_message(user_key)  # TODO: uncomment for online testing
 
     return user_path
 
