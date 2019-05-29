@@ -15,6 +15,7 @@ PROJECT_DIR = os.path.dirname(os.path.realpath(__file__))
 app = Flask(__name__)
 app.secret_key = os.urandom(24)
 
+
 # === index page
 @app.route('/', methods=['GET', 'POST'])
 def index():
