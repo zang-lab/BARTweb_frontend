@@ -31,7 +31,7 @@ RUN a2ensite apache-flask
 RUN a2enmod headers
 
 RUN mkdir -p /BARTweb
-COPY  . /BARTweb/
+COPY . /BARTweb/
 
 # feed apache to docker
 RUN a2dissite 000-default.conf
