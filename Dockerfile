@@ -30,6 +30,7 @@ COPY ./apache-flask.conf /etc/apache2/sites-available/apache-flask.conf
 RUN a2ensite apache-flask
 RUN a2enmod headers
 
+RUN mkdir -p /BARTweb
 COPY  . /BARTweb/
 
 # feed apache to docker
