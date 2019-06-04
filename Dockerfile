@@ -42,6 +42,7 @@ EXPOSE 80
 WORKDIR /BARTweb/
 
 # For log
+RUN chrom 777 usercase
 RUN mkdir -p usercase/log
 RUN touch usercase/log/bartweb.log
 RUN chown -R www-data:www-data usercase/log
