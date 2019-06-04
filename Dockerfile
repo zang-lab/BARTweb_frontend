@@ -30,7 +30,8 @@ COPY ./apache-flask.conf /etc/apache2/sites-available/apache-flask.conf
 RUN a2ensite apache-flask
 RUN a2enmod headers
 
-COPY  . /BARTweb/
+RUN mkdir -p /BARTweb
+COPY . /BARTweb/
 
 # feed apache to docker
 RUN a2dissite 000-default.conf
@@ -49,5 +50,5 @@ RUN chown -R www-data:www-data usercase/log
 RUN chmod -R 775 usercase/log
 
 #run apache, this directory is present with installation of apache
-CMD /usr/sbin/apache2ctl -D FOREGROUND
+CMD ["/usr/sbin/apache2ctl", "-D", "FOREGROUND"]
 
