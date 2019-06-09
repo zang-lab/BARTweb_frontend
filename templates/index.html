@@ -51,8 +51,8 @@
           <p>The current version is BART 1.1, which uses over 7,000 human ChIP-seq datasets and over 5,000 mouse ChIP-seq datasets from the public domain (collected in Cistrome Data Browser) to make the prediction.</p>
           
           <!-- BART workflow image-->
-          <img id="bart_workflow" class="mb-3" src="{{ url_for('static', filename='bart_workflow.png') }}" alt="" width="700">
-          <img id="bart_region_workflow" class="mb-3" src="{{ url_for('static', filename='bart_region_workflow.png') }}" alt="" width="700" hidden>
+          <img id="bart_workflow" class="mb-3" src="{{ url_for('static', filename='bart_workflow.png') }}" alt="" width="600">
+          <!-- <img id="bart_region_workflow" class="mb-3" src="{{ url_for('static', filename='bart_region_workflow.png') }}" alt="" width="700" hidden> -->
         </div>
       </div>
 
@@ -139,17 +139,17 @@
                 <p class="mb-3" id="region_type_label"><b>Region set input type:</b></p>
               </div>
               <div class="col-md-10 mb-3">
-                <div class="custom-control custom-radio custom-control-inline">
+                <div class="custom-control custom-radio">
                   <input id="oneBed3" name="region_type" value="oneBedUnscored" type="radio" class="custom-control-input" checked required>
-                  <label class="custom-control-label" for="oneBed3">Unscored bed file</label>
+                  <label class="custom-control-label" for="oneBed3">I want to find TFs enriched in bed file</label>
                 </div>
-                <div class="custom-control custom-radio custom-control-inline">
+                <div class="custom-control custom-radio">
                   <input id="diffBed" name="region_type" value="diffBedUnscored" type="radio" class="custom-control-input" required>
-                  <label class="custom-control-label" for="diffBed">Unscored bed file (two conditions)</label>
+                  <label class="custom-control-label" for="diffBed">I want to find TFs enriched in treatment against control</label>
                 </div>
-                <div class="custom-control custom-radio custom-control-inline">
+                <div class="custom-control custom-radio">
                   <input id="scoredBed" name="region_type" value="oneBedScored" type="radio" class="custom-control-input" required>
-                  <label class="custom-control-label" for="scoredBed">Scored bed file</label>
+                  <label class="custom-control-label" for="scoredBed">I want to find TFs enriched in highly scored regions</label>
                 </div>
               </div>
             </div>
@@ -193,10 +193,10 @@
 
                     <p id="geneFileType">Genelist must be <b>official gene symbol</b> in .txt format (each name in a row). More than 100 genes is recommended.</p>
                     <p id="chipFileType" hidden>ChIP-seq must be <b>mapped reads data files</b> in .bed/.bam format in the corresponding genome assembly.</p>
-                    <p id="regionsFileType1" hidden>RegionsFileType1.</p>
-                    <p id="regionsFileType2" hidden>RegionsFileType2.</p>
-                    <p id="regionsFileType3" hidden>RegionsFileType3.</p>
-                    <p id="HiCFileType" hidden>Input for differential HiC bart are <b>matrix (.matrix) and index (.bed) for control and treatment HiC samples in cooler format</b> in the corresponding genome assembly.</p>
+                    <p id="regionsFileType1" hidden>Input bed file must adhere to the <b>bed3 format</b> in its first three columns.</p>
+                    <p id="regionsFileType2" hidden>Input bed files must adhere to the <b>bed3 format</b> in its first three columns. The control bed file serves as a background for profiling the treatment bed file.</p>
+                    <p id="regionsFileType3" hidden>Input bed file must adhere to the <b>bed6 format</b>, with the score at the 5th column (starting from 1).</p>
+                    <p id="HiCFileType" hidden>Input for differential HiC BART are <b>matrix (.matrix) and index (.bed) for control and treatment HiC samples in cooler format</b> in the corresponding genome assembly.</p>
                   </div>
                 </div>
 
@@ -432,8 +432,8 @@
       switch(n)
       {
         case 'ChIP-seq':
-          $('#bart_workflow').removeAttr('hidden');
-          $('#bart_region_workflow').prop("hidden", true);
+          //$('#bart_workflow').removeAttr('hidden');
+          //$('#bart_region_workflow').prop("hidden", true);
 
           $('#region_type_selection').prop("hidden", true);
 
@@ -493,8 +493,8 @@
           break;
 
         case 'Geneset':
-          $('#bart_workflow').removeAttr('hidden');
-          $('#bart_region_workflow').prop("hidden", true);
+          //$('#bart_workflow').removeAttr('hidden');
+          //$('#bart_region_workflow').prop("hidden", true);
 
           $('#region_type_selection').prop("hidden", true);
 
@@ -558,8 +558,8 @@
           break;
 
         case 'regions':
-          $('#bart_region_workflow').removeAttr('hidden');
-          $('#bart_workflow').prop("hidden", true);
+          //$('#bart_region_workflow').removeAttr('hidden');
+          //$('#bart_workflow').prop("hidden", true);
 
           $('#region_type_selection').removeAttr('hidden');
 
