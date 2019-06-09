@@ -132,6 +132,28 @@
               </div>
             </div>
 
+            <!-- input type for regionset bart -->
+            <div class="row" id="region_type_selection" hidden>
+              <div class="col-md-2 mb-3">
+                <p class="mb-3" id="region_type_label"><b>Region set input type:</b></p>
+              </div>
+              <div class="col-md-10 mb-3">
+                <div class="custom-control custom-radio custom-control-inline">
+                  <input id="oneBed3" name="region_type" value="oneBedUnscored" type="radio" class="custom-control-input" checked required>
+                  <label class="custom-control-label" for="oneBed3">Unscored bed file</label>
+                </div>
+                <div class="custom-control custom-radio custom-control-inline">
+                  <input id="scoredBed" name="region_type" value="oneBedScored" type="radio" class="custom-control-input" required>
+                  <label class="custom-control-label" for="scoredBed">Scored bed file</label>
+                </div>
+                <div class="custom-control custom-radio custom-control-inline">
+                  <input id="diffBed" name="region_type" value="diffBedUnscored" type="radio" class="custom-control-input" required>
+                  <label class="custom-control-label" for="diffBed">Differential bed file</label>
+                </div>
+
+              </div>
+            </div>
+
             <!-- Input Data: Genelist/ChIP-seq -->
             <div class="row">
               <div class="col-md-2">
@@ -152,6 +174,10 @@
                     <input id="uploadFilesGenelist" name="uploadFilesGenelist" type="file" accept=".txt" required>
                     <input id="uploadFilesProfile" name="uploadFilesProfile" type="file" accept=".bam,.bed" hidden>
                     <input id="uploadFilesRegions" name="uploadFilesRegions" type="file" accept=".bed" hidden>
+                    <div id="RegionsLabel" hidden><b>Control bed file</b></div>
+                    <input id="uploadFilesRegions_treat" name="uploadFilesRegions_treat" type="file" accept=".bed" hidden>
+                    <div id="RegionsLabel_treat" hidden><b>Treatment bed file</b></div>
+
                     <input id="uploadFilesIndex1" name="uploadFilesIndex1" type="file" accept=".bed" hidden>
                     <label id="HiCLabel1" hidden><b>Index file of control Hi-C sample</b></label>
                     <input id="uploadFilesMatrix1" name="uploadFilesMatrix1" type="file" accept=".matrix" hidden>
@@ -166,7 +192,9 @@
 
                     <p id="geneFileType">Genelist must be <b>official gene symbol</b> in .txt format (each name in a row). More than 100 genes is recommended.</p>
                     <p id="chipFileType" hidden>ChIP-seq must be <b>mapped reads data files</b> in .bed/.bam format in the corresponding genome assembly.</p>
-                    <p id="regionsFileType" hidden>Region set must be a <b>scored bed file</b> in the corresponding genome assembly with the score of this profile at the 5th column (starting from 1).</p>
+                    <p id="regionsFileType1" hidden>RegionsFileType1.</p>
+                    <p id="regionsFileType2" hidden>RegionsFileType2.</p>
+                    <p id="regionsFileType3" hidden>RegionsFileType3.</p>
                     <p id="HiCFileType" hidden>Input for differential HiC bart are <b>matrix (.matrix) and index (.bed) for control and treatment HiC samples in cooler format</b> in the corresponding genome assembly.</p>
                   </div>
                 </div>
@@ -434,7 +462,7 @@
           // related to upload file type
           $('#HiCFileType').prop("hidden", true);
           $('#geneFileType').prop("hidden", true);
-          $('#regionsFileType').prop("hidden", true);
+          $('#regionsFileType1').prop("hidden", true);
           $('#chipFileType').removeAttr('hidden');
 
           // enable upload files if diabled due to geneFile choice
@@ -483,7 +511,7 @@
           // related to upload file type
           $('#HiCFileType').prop("hidden", true);
           $('#geneFileType').removeAttr('hidden');
-          $('#regionsFileType').prop("hidden", true);
+          $('#regionsFileType1').prop("hidden", true);
           $('#chipFileType').prop("hidden", true);
 
 
@@ -536,7 +564,7 @@
           $('#HiCFileType').prop("hidden", true);
           $('#geneFileType').prop("hidden", true);
           $('#chipFileType').prop("hidden", true);
-          $('#regionsFileType').removeAttr('hidden');
+          $('#regionsFileType1').removeAttr('hidden');
 
           $('#uploadFilesRegions').prop('disabled', false);
           $('#uploadFilesRegions').attr("accept", ".bed");
@@ -580,7 +608,7 @@
           $('#uploadFile').removeAttr('hidden');
 
           $('#geneFileType').prop("hidden", true);
-          $('#regionsFileType').prop("hidden", true);
+          $('#regionsFileType1').prop("hidden", true);
           $('#chipFileType').prop("hidden", true);
           $('#HiCFileType').removeAttr('hidden');
 
