@@ -141,7 +141,7 @@
               <div class="col-md-10 mb-3">
                 <div class="custom-control custom-radio">
                   <input id="oneBed3" name="region_type" value="oneBedUnscored" type="radio" class="custom-control-input" checked required>
-                  <label class="custom-control-label" for="oneBed3">I want to find TFs enriched in bed file</label>
+                  <label class="custom-control-label" for="oneBed3">I want to find TFs enriched a in bed file</label>
                 </div>
                 <div class="custom-control custom-radio">
                   <input id="diffBed" name="region_type" value="diffBedUnscored" type="radio" class="custom-control-input" required>
@@ -357,6 +357,9 @@
                 if (document.getElementById('data_type').value=='regions' && document.getElementById('uploadFilesRegions').value == "") {
                   count += 1;
                   alertStr = alertStr.concat('Please upload your regionset bed file.\n');
+                }else if ($("input[name='region_type']:checked").val()==='diffBedUnscored' && document.getElementById('uploadFilesRegions_treat').value == "") {
+                  count += 1;
+                  alertStr = alertStr.concat('Please upload both regionset bed file.\n');
                 }
 
                 if (document.getElementById('data_type').value=='HiC' && (document.getElementById('uploadFilesIndex1').value == "" || document.getElementById('uploadFilesIndex2').value == "" || document.getElementById('uploadFilesMatrix1').value == "" || document.getElementById('uploadFilesMatrix2').value == "")) {
@@ -497,6 +500,7 @@
           //$('#bart_region_workflow').prop("hidden", true);
 
           $('#region_type_selection').prop("hidden", true);
+
 
           $('#progressBar').prop("hidden", true);
           $('#sample').removeAttr('hidden');
@@ -697,10 +701,10 @@
     //different region types
     $('input[name=region_type]').on('change', function() {
       var n = $(this).val();
-      console.log(n);
       switch(n)
       {
         case 'oneBedUnscored':
+          //console.log($('input[name=region_type]').val());
           $('#uploadFilesRegions').removeAttr('hidden');
           $('#RegionsLabel').prop('hidden', true);
           $('#uploadFilesRegions_treat').prop('hidden', true);
@@ -720,6 +724,7 @@
         break;
 
         case 'diffBedUnscored':
+          //console.log($('input[name=region_type]').val());
           $('#uploadFilesRegions').removeAttr('hidden');
           $('#RegionsLabel').removeAttr('hidden');
           $('#uploadFilesRegions_treat').removeAttr('hidden');
@@ -740,6 +745,7 @@
 
 
         case 'oneBedScored':
+          //console.log($('input[name=region_type]').val());
           $('#uploadFilesRegions').removeAttr('hidden');
           $('#RegionsLabel').prop('hidden', true);
           $('#uploadFilesRegions_treat').prop('hidden', true);

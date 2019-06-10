@@ -20,7 +20,10 @@ $(document).ready(function() {
         }
         if (dataType=='regions' && document.getElementById('uploadFilesRegions').value == "") {
             return
+        }else if ($("input[name='region_type']:checked").val()==='diffBedUnscored' && document.getElementById('uploadFilesRegions_treat').value == "") {
+            return
         }
+        console.log(dataType);
 
 		// will not preform redirect(url_for('get_result', user_key=user_key))
 		event.preventDefault();
@@ -33,9 +36,21 @@ $(document).ready(function() {
 			formData.append('uploadFilesProfile',file);
         }
 		if (dataType=='regions') {
-            var fileInput = document.getElementById('uploadFilesRegions');
- 			var file = fileInput.files[0];
-			formData.append('uploadFilesRegions',file);
+			if ($("input[name='region_type']:checked").val()==='diffBedUnscored'){
+				var fileInput = document.getElementById('uploadFilesRegions');
+	 			var file = fileInput.files[0];
+	 			var fileInput_treat = document.getElementById('uploadFilesRegions_treat');
+	 			var file_treat = fileInput_treat.files[0];
+	 			formData.append('uploadFilesRegions',file);
+	 			formData.append('uploadFilesRegions_treat',file_treat);
+				formData.append('region_type','diffBedUnscored');
+
+			}else{
+	            var fileInput = document.getElementById('uploadFilesRegions');
+	 			var file = fileInput.files[0];
+				formData.append('uploadFilesRegions',file);
+				formData.append('region_type',$("input[name='region_type']:checked").val());
+			}
         }
         if (dataType=='HiC') {
             var index1Input = document.getElementById('uploadFilesIndex1');
@@ -77,7 +92,7 @@ $(document).ready(function() {
 			xhr : function() {
 				var xhr = new window.XMLHttpRequest();
 				xhr.upload.addEventListener('progress', function(e) {
-					console.log(e.lengthComputable)
+					// console.log(e.lengthComputable)
 					$('#progressBar').removeAttr('hidden');
 					$('#HiCLabel5').prop('hidden', true);
 					if (e.lengthComputable) {

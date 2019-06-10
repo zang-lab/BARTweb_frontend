@@ -44,13 +44,13 @@ def index():
             user_data['user_path'] = user_path
             user_data['dataType'] = request.form['dataType']
             user_data['assembly'] = request.form['species']
-            if user_data['dataType'] != 'HiC':
-                user_data['files'] = ''
-            else:
-                user_data['control_index_file'] = ''
-                user_data['control_matrix_file'] = ''
-                user_data['treatment_index_file'] = ''
-                user_data['treatment_matrix_file'] = ''
+            # if user_data['dataType'] != 'HiC':
+            #     user_data['files'] = ''
+            # else:
+            #     user_data['control_index_file'] = ''
+            #     user_data['control_matrix_file'] = ''
+            #     user_data['treatment_index_file'] = ''
+            #     user_data['treatment_matrix_file'] = ''
 
             #Already cheked in HTML
             # if user_data['dataType'] == "ChIP-seq":
@@ -92,21 +92,45 @@ def index():
             
             # validate upload file and write fine name and file path into config in the case of scored bed
             if request.form['dataType'] == 'regions':
-                if 'uploadFilesRegions' not in request.files:   
-                    flash('Please choose a file')   
-                    return redirect(request.url)
-                file = request.files['uploadFilesRegions']
-                if file.filename == '': 
-                    flash('One of the files does not have a legal file name.')  
-                    return redirect(request.url)
-                if file:
-                    filename = secure_filename(file.filename)   
+                if request.form['region_type'] == 'diffBedUnscored':
+                    if 'uploadFilesRegions' not in request.files or 'uploadFilesRegions_treat' not in request.files:   
+                        flash('Please choose all files')   
+                        return redirect(request.url)
+                    file_control = request.files['uploadFilesRegions']
+                    file_treat = request.files['uploadFilesRegions_treat']
+                    if file_control.filename == '' or file_treat.filename == '': 
+                        flash('One of the files does not have a legal file name.')  
+                        return redirect(request.url)
                     upload_path = os.path.join(user_path, 'upload') 
-                    filename = "Region.bed"
-                    filename_abs_path = os.path.join(upload_path, filename) 
-                    file.save(filename_abs_path)    
-                    user_data['files'] = filename # only save file name, since the uploaded path is always the same
-                    user_data['original_input'] = secure_filename(file.filename)
+                    filename_control = "Region_control.bed"
+                    filename_treat = "Region_treat.bed"
+                    filename_abs_path_control = os.path.join(upload_path, filename_control) 
+                    filename_abs_path_treat = os.path.join(upload_path, filename_treat) 
+                    file_control.save(filename_abs_path_control)
+                    file_treat.save(filename_abs_path_treat)
+                    user_data['files_control'] = filename_control
+                    user_data['files_treat'] = filename_treat
+                    user_data['control_original_input'] = secure_filename(file_control.filename)
+                    user_data['treat_original_input'] = secure_filename(file_treat.filename)
+                    user_data['region_type'] = request.form['region_type']
+
+                else:
+                    if 'uploadFilesRegions' not in request.files:   
+                        flash('Please choose a file')   
+                        return redirect(request.url)
+                    file = request.files['uploadFilesRegions']
+                    if file.filename == '': 
+                        flash('One of the files does not have a legal file name.')  
+                        return redirect(request.url)
+                    if file:
+                        filename = secure_filename(file.filename)   
+                        upload_path = os.path.join(user_path, 'upload') 
+                        filename = "Region.bed"
+                        filename_abs_path = os.path.join(upload_path, filename) 
+                        file.save(filename_abs_path)    
+                        user_data['files'] = filename # only save file name, since the uploaded path is always the same
+                        user_data['original_input'] = secure_filename(file.filename)
+                        user_data['region_type'] = request.form['region_type']
 
             # validate upload file and write fine name and file path into config in the case of genelist input
             if request.form['dataType'] == 'Geneset' and request.form['geneType'] == 'geneFile': 

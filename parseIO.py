@@ -67,7 +67,7 @@ def init_project_path(user_key):
         with open(user_log_file_path, 'w'): pass
 
     logger.info("Init project: send user key to Amazon SQS...")
-    utils.send_sqs_message(user_key)  # TODO: uncomment for online testing
+    #utils.send_sqs_message(user_key)  # TODO: uncomment for online testing
 
     return user_path
 
@@ -114,14 +114,18 @@ def is_user_key_exists(user_key):
 
 def prepare_bart(user_data):
 
-    if user_data['dataType'] != 'HiC':
-        bart_input = os.path.join(user_data['user_path'], 'upload/' + user_data['files'])
-    else:
+    if user_data['dataType'] == 'HiC':
         bart_input = []
         bart_input.append(os.path.join(user_data['user_path'], 'upload/' + user_data['control_index_file']))
         bart_input.append(os.path.join(user_data['user_path'], 'upload/' + user_data['control_matrix_file']))
         bart_input.append(os.path.join(user_data['user_path'], 'upload/' + user_data['treatment_index_file']))
         bart_input.append(os.path.join(user_data['user_path'], 'upload/' + user_data['treatment_matrix_input']))
+    elif user_data['dataType'] == 'regions':
+        #place holder, awaiting Zhenjia
+        bart_input = 'placeholder'
+    else:
+        bart_input = os.path.join(user_data['user_path'], 'upload/' + user_data['files'])
+        
     bart_species = user_data['assembly']
     bart_output_dir = os.path.join(user_data['user_path'], 'download/')
     if user_data['dataType'] == 'Geneset':
@@ -177,13 +181,20 @@ def generate_results(user_data):
     #this line is the file name in our own filesystem, does not need to show to user
     #results['user_conf']['Input_data'] = user_data['files']
     #this is the actrual file name that the user uploaded
-    if user_data['dataType'] != 'HiC':
-        results['user_conf']['Input_data'] = user_data['original_input']
-    else:
+    if user_data['dataType'] == 'HiC':
         results['user_conf']['control_index_input'] = user_data['control_index_input']
         results['user_conf']['control_matrix_input'] = user_data['control_matrix_input']
         results['user_conf']['treatment_index_input'] = user_data['treatment_index_input']
         results['user_conf']['treatment_matrix_input'] = user_data['treatment_matrix_input']
+    elif user_data['dataType'] == 'regions':
+        results['user_conf']['region_type'] = user_data['region_type']
+        if user_data['region_type'] == 'diffBedUnscored':
+            results['user_conf']['control_input'] = user_data['control_original_input']
+            results['user_conf']['treat_input'] = user_data['treat_original_input']
+        else: 
+            results['user_conf']['Input_data'] = user_data['original_input']
+    else:
+        results['user_conf']['Input_data'] = user_data['original_input']
     results['done'] = is_bart_done(user_data)
     if 'error' in user_data:
         results['error'] = user_data['error']
