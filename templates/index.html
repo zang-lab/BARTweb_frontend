@@ -45,8 +45,6 @@
           <h2>BART</h2>
           <h5><u>B</u>inding <u>A</u>nalysis for <u>R</u>egulation of <u>T</u>ranscription</h5>
           <br>
-          <h5>BART predicts functional transcription factors from a gene list or genomic binding profile. </h5>
-          <br>
           <p>This web server is to perform BART, a bioinformatics tool for predicting functional factors (including transcription factors and chromatin regulators) that bind at cis-regulatory regions to regulate gene expression in the human or mouse genomes, taking a query gene list or a ChIP-seq dataset as input.</p>
           <p>The current version is BART 1.1, which uses over 7,000 human ChIP-seq datasets and over 5,000 mouse ChIP-seq datasets from the public domain (collected in Cistrome Data Browser) to make the prediction.</p>
           
@@ -120,8 +118,8 @@
                 <select id=data_type name="dataType">
                   <option id="genelist" value="Geneset">Genelist</option>
                   <option id="ChIP-seq" value="ChIP-seq">ChIP-seq data</option>
-                  <option id="regions" value="regions" hidden>Region set</option>
-                  <option id="HiC" value="HiC" hidden>Differential Hi-C</option>
+                  <!-- <option id="regions" value="regions" hidden>Region set</option> -->
+                  <!-- <option id="HiC" value="HiC" hidden>Differential Hi-C</option> -->
                 </select> 
                 <align id="sample" class="col-md-9 mb-3">
                   <a href="/sample/genelist" download>
