@@ -42,17 +42,17 @@
 
           </ul>
           <h3>Manual</h3>
-          <p><img src="{{ url_for('static', filename='bartweb_guidelines.png') }}" alt='bartweb_guidelines' referrerPolicy='no-referrer' width="1000"/></p>
+          <p><img src="{{ url_for('static', filename='bartweb_guidelines_bart2.png') }}" alt='bartweb_guidelines' referrerPolicy='no-referrer' width="1000"/></p>
           <h5>Submit a job</h5>
           <p>The first three options (species, data type and input data) are required. </p>
           <p><strong>Species</strong>: Currently, only human (hg38) and mouse (mm10) genomes are supported. </p>
-          <p><strong>Input data type</strong>: A gene list has to be official gene symbols in text format. ChIP-seq data can be mapped reads in both BAM and BED format. Please make sure your ChIP-seq data are mapped to the correct genome version (hg38 or mm10).</p>
+          <p><strong>Input data type</strong>: A gene list has to be official gene symbols in text format. ChIP-seq data can be mapped reads in either BAM or BED format. Please make sure your ChIP-seq data are mapped to the correct genome version (hg38 or mm10).</p>
           <p>If you leave an e-mail address, BARTweb will send you e-mail notifications about the job key, job status, and result URL.</p>
           <p>Once you press the Submit button, BARTweb will redirect you to the result page. </p>
           <br>
           <h5>Result page</h5>
-          <p>Usually, a job will take 10 minutes to run. You can always click the Result button on the navigation bar and use your key to get your result or the job status. If your job is not finished running, the title will indicate still running status with a processing log presented in a text area. You can click the Copy Key button to copy your job key to the clipboard and paste it somewhere for your record. If the job is failed, the title will indicate ends with error with the processing log indicating the error. If you are not sure why your job ends with error, please contact us with your job key for more information.</p>
-          <p>If you want to share your result with others, you can send them the result link URL. Anyone can open and view an analysis result with the link URL or a job key. </p>
+          <p>Usually, a job will take 10 minutes to run. You can always click the Result button on the navigation bar and use your key to get your result or the job status. If your job has not finished running, the title will indicate still-running status with a processing log presented in a text area. You can click the Copy Key button to copy your job key to the clipboard and paste it somewhere for your record. If the job has failed, the title will indicate ends with an error with the processing log detailing the error. If you are not sure why your job ends with an error, please contact us with your job key for more information.</p>
+          <p>If you want to share your result with others, you can send them the result link URL. Anyone can open and view an analysis result with the link URL or the job key. </p>
           <p>If your job is done successfully, the analysis result can be retrieved with the job key anytime within 180 days after the job submission. </p>
           <br>
           <h4>How to interpret BART result</h4>
