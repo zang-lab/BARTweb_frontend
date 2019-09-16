@@ -31,57 +31,52 @@
         <div class="py-3">
           <h3><font color="#002F6C">BARTweb help page</font></h3>
           <p>BARTweb is an interactive web server to predict functional transcription factors that regulate a given gene list or associate with a genomic profile. It is a web interface to <a href='http://faculty.virginia.edu/zanglab/bart/index.htm'>BART Python package</a>. </p>
-          <p>If you use BARTweb in your data analysis or publish the results of BARTweb, please cite the following publication(s) in the main text of your paper: </p>
+          <p>If you use BARTweb in your data analysis or publish the results of BARTweb, please cite the following paper in the main text of your manuscript: </p>
           <ul>
           <li>Zhenjia Wang, Mete Civelek, Clint Miller, Nathan Sheffield, Michael J. Guertin, Chongzhi Zang.  BART: a transcription factor prediction tool with query gene sets or epigenomic profiles. <em>Bioinformatics</em>, <strong>34</strong>, 2867–2869 (2018). DOI: <a href='https://doi.org/10.1093/bioinformatics/bty194' target="_new">10.1093/bioinformatics/bty194</a></li>
 
           </ul>
-          <p>If your analysis is from a gene list, please also cite the following paper:</p>
-          <ul>
-          <li>Su Wang, Chongzhi Zang, Tengfei Xiao, Jingyu Fan, Shenglin Mei, Qian Qin, Qiu Wu, Xujuan Li, Kexin Xu, Housheng Hansen He, Myles Brown, Clifford A. Meyer, X. Shirley Liu. Modeling cis-regulation with a compendium of genome-wide histone H3K27ac profiles. <em>Genome Research</em>, <strong>26</strong>, 1417–1429 (2016). DOI: <a href='https://doi.org/10.1101/gr.201574.115' target="_new">10.1101/gr.201574.115</a></li>
-
-          </ul>
+         
           <h3>Manual</h3>
           <p><img src="{{ url_for('static', filename='bartweb_guidelines_bart2.png') }}" alt='bartweb_guidelines' referrerPolicy='no-referrer' width="1000"/></p>
           <h5>Submit a job</h5>
           <p>The first three options (species, data type and input data) are required. </p>
           <p><strong>Species</strong>: Currently, only human (hg38) and mouse (mm10) genomes are supported. </p>
-          <p><strong>Input data type</strong>: A gene list has to be official gene symbols in text format. ChIP-seq data can be mapped reads in either BAM or BED format. Please make sure your ChIP-seq data are mapped to the correct genome version (hg38 or mm10).</p>
-          <p>If you leave an e-mail address, BARTweb will send you e-mail notifications about the job key, job status, and result URL.</p>
-          <p>Once you press the Submit button, BARTweb will redirect you to the result page. </p>
+          <p><strong>Input data type</strong>: A gene list has to be official gene symbols in text format. ChIP-seq data can be mapped reads in either BAM or BED format. Please make sure that the ChIP-seq data are mapped to the correct genome version (hg38 or mm10).</p>
+          <p>If an email address is provided, BARTweb will send email notifications with the job key, job status, and the result URL.</p>
+          <p>After clicking the “Submit” button, BARTweb will redirect to the result page.</p>
           <br>
           <h5>Result page</h5>
-          <p>Usually, a job will take 10 minutes to run. You can always click the Result button on the navigation bar and use your key to get your result or the job status. If your job has not finished running, the title will indicate still-running status with a processing log presented in a text area. You can click the Copy Key button to copy your job key to the clipboard and paste it somewhere for your record. If the job has failed, the title will indicate ends with an error with the processing log detailing the error. If you are not sure why your job ends with an error, please contact us with your job key for more information.</p>
-          <p>If you want to share your result with others, you can send them the result link URL. Anyone can open and view an analysis result with the link URL or the job key. </p>
-          <p>If your job is done successfully, the analysis result can be retrieved with the job key anytime within 180 days after the job submission. </p>
+          <p>It usually takes a few minutes to run a job. You can click the “Result” button on the navigation bar or use the job key to get the result or the job status anytime. If the job has not finished, you will see the “still-running” status in the title and a processing log presented. You can click the “Copy Key” button to copy the job key to the clipboard and keep it for your record. If the job fails, the detailed error message will be shown in the processing log. If you cannot figure out possible causes of the error, you are welcome to contact us with the job key for help.</p>
+          <p>You can share your BART analysis result with others by providing them with the result link URL or the job key. Anyone with a result URL or a job key can open and view the BART analysis result at the user’s own risk.</p>
+          <p>For successfully finished jobs, the analysis result will be stored on the web server and can be retrieved with the job key for 180 days after the job submission.</p>
           <br>
-          <h4>How to interpret BART result</h4>
+          <h4>How to interpret the BART result</h4>
           <p><img src="{{ url_for('static', filename='bartweb2_result.png') }}" alt='bartweb_result' referrerPolicy='no-referrer' width="1000"/></p>
           <br>
           <h5>Output 1: Transcription factor prediction table</h5>
-          <p>We take this sub-table of our <a href='http://bartweb.org/sample_result/genelist'>pre-run result</a> as an example to illustrate.</p>
+          <p>We take this sub-table of a <a href='http://bartweb.org/sample_result/genelist'>pre-run result</a> as an example to illustrate.</p>
           <ul>
-          <li><strong>TF</strong> (Column 1): Transcription factor names. When you click a TF, another window will pop up with the analysis plots focusing on this TF.</li>
+          <li><strong>TF</strong> (Column 1): Transcription factor name. When clicking a TF name, the analysis plots for this TF will be shown in a pop-up window.</li>
           </ul>
           <ul>
-          <li><strong>Wilcoxon test statistic &amp; P-value</strong> (Columns 2 &amp; 3): These two columns indicate the association prediction of each TF with respect to data for all other TFs. For each TF, we use Wilcoxon rank-sum test to compare the association scores from ChIP-seq datasets of that factor with the association scores from all datasets. </li>
+          <li><strong>Wilcoxon test statistic &amp; P-value</strong> (Columns 2 &amp; 3): These two values indicate the level of association of each TF under the background of all other TFs. For each TF, we use Wilcoxon rank-sum test to compare the association scores from all ChIP-seq datasets for that factor with the association scores from all ChIP-seq datasets for other TFs.</li>
           </ul>
           <ul>
-          <li><strong>Z-score</strong> (Column 4): This column is used to assess the specificity of each factor compared with a background model. We build up background models using the Wilcoxon test statistics obtained from each annotated gene set from the Molecular Signatures Database (MSigDB) for the Genelist mode or using each H3K27ac ChIP-seq dataset from the ChIP-seq data compendium for the ChIP-seq data mode, respectively.</li>
+          <li><strong>Z-score</strong> (Column 4): This value is to assess the specificity of each TF compared with a background model. We build up background models using the Wilcoxon test statistics obtained from all annotated gene sets from the Molecular Signatures Database (MSigDB) for the Genelist mode or all H3K27ac ChIP-seq datasets from the data compendium for ChIP-seq data mode, respectively.</li>
           </ul>
           <ul>
-          <li><strong>Max AUC</strong> (Column 5): This column shows the maximum association score of that factor among multiple ChIP-seq datasets.</li>
+          <li><strong>Max AUC</strong> (Column 5): The maximum association score among multiple ChIP-seq datasets of that TF.</li>
           </ul>
           <ul>
-          <li><strong>Relative Rank</strong> (Column 6): This column indicates the average rank of Wilcoxon P-value, Z-score and maxAUC for each factor divided by the total number of factors. </li>
+          <li><strong>Relative Rank</strong> (Column 6): The average rank of Wilcoxon test statistic, Z-score and maxAUC for each TF, divided by the total number of TFs.</li>
           </ul>
           <ul>
-          <li><strong>Irwin-Hall P-value</strong> (Column 7): This P-value indicates the integrative rank significance, using the Irwin-Hall distribution as the null distribution for unrelated ranks. One can use 0.01 as the cutoff for significance threshold. </li>
+          <li><strong>Irwin-Hall P-value</strong> (Column 7): This P-value indicates the integrative rank significance, using the Irwin-Hall distribution as the null distribution for unrelated ranks. One can use 0.01 as a threshold for significant TF identification.</li>
           </ul>
-          <p>You can hover your mouse on the header of the table.</p>
           <br>
-          <h5>Output 2: Data files and plots for download</h5>
-          <p>Besides the transcription factor table, we also have other output data files available for download including the predicted genomic regulatory (enhancer) profile and analysis plots for each transcription factor. The plots are in high resolution, which can be directly used for publication.</p>
+          <h5>Output 2: Data files and figure images</h5>
+          <p>Besides the transcription factor table, other output data files are also available for download, including the predicted genomic regulatory (enhancer) profile and analysis plots for each factor. The image files are in high resolution with publication quality.</p>
                       
         </div>
 
