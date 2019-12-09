@@ -130,7 +130,7 @@ def index():
                         file.save(filename_abs_path)    
                         user_data['files'] = filename # only save file name, since the uploaded path is always the same
                         user_data['original_input'] = secure_filename(file.filename)
-                        user_data['region_type'] = request.form['region_type']
+                        #user_data['region_type'] = request.form['region_type']
 
             # validate upload file and write fine name and file path into config in the case of genelist input
             if request.form['dataType'] == 'Geneset' and request.form['geneType'] == 'geneFile': 

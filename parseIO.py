@@ -120,9 +120,9 @@ def prepare_bart(user_data):
         bart_input.append(os.path.join(user_data['user_path'], 'upload/' + user_data['control_matrix_file']))
         bart_input.append(os.path.join(user_data['user_path'], 'upload/' + user_data['treatment_index_file']))
         bart_input.append(os.path.join(user_data['user_path'], 'upload/' + user_data['treatment_matrix_input']))
-    elif user_data['dataType'] == 'regions':
-        #place holder, awaiting Zhenjia
-        bart_input = 'placeholder'
+    # elif user_data['dataType'] == 'regions':
+    #     #place holder, awaiting Zhenjia
+    #     bart_input = 'placeholder'
     else:
         bart_input = os.path.join(user_data['user_path'], 'upload/' + user_data['files'])
         
@@ -186,13 +186,13 @@ def generate_results(user_data):
         results['user_conf']['control_matrix_input'] = user_data['control_matrix_input']
         results['user_conf']['treatment_index_input'] = user_data['treatment_index_input']
         results['user_conf']['treatment_matrix_input'] = user_data['treatment_matrix_input']
-    elif user_data['dataType'] == 'regions':
-        results['user_conf']['region_type'] = user_data['region_type']
-        if user_data['region_type'] == 'diffBedUnscored':
-            results['user_conf']['control_input'] = user_data['control_original_input']
-            results['user_conf']['treat_input'] = user_data['treat_original_input']
-        else: 
-            results['user_conf']['Input_data'] = user_data['original_input']
+    # elif user_data['dataType'] == 'regions':
+    #     results['user_conf']['region_type'] = user_data['region_type']
+    #     if user_data['region_type'] == 'diffBedUnscored':
+    #         results['user_conf']['control_input'] = user_data['control_original_input']
+    #         results['user_conf']['treat_input'] = user_data['treat_original_input']
+    #     else: 
+    #         results['user_conf']['Input_data'] = user_data['original_input']
     else:
         results['user_conf']['Input_data'] = user_data['original_input']
     results['done'] = is_bart_done(user_data)

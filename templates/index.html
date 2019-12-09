@@ -119,7 +119,7 @@
                 <select id=data_type name="dataType">
                   <option id="genelist" value="Geneset">Genelist</option>
                   <option id="ChIP-seq" value="ChIP-seq">ChIP-seq data</option>
-                  <!-- <option id="regions" value="regions" hidden>Region set</option> -->
+                  <option id="regions" value="regions">Region set (Beta)</option>
                   <!-- <option id="HiC" value="HiC" hidden>Differential Hi-C</option> -->
                 </select> 
                 <align id="sample" class="col-md-9 mb-3">
@@ -133,7 +133,7 @@
             </div>
 
             <!-- input type for regionset bart -->
-            <div class="row" id="region_type_selection" hidden>
+            <!--<div class="row" id="region_type_selection" hidden>
               <div class="col-md-2 mb-3">
                 <p class="mb-3" id="region_type_label"><b>Region set input type:</b></p>
               </div>
@@ -151,7 +151,7 @@
                   <label class="custom-control-label" for="scoredBed">I want to find TFs enriched in highly scored regions</label>
                 </div>
               </div>
-            </div>
+            </div>-->
 
             <!-- Input Data: Genelist/ChIP-seq -->
             <div class="row">
@@ -174,9 +174,9 @@
                     <input id="uploadFilesProfile" name="uploadFilesProfile" type="file" accept=".bam,.bed" hidden>
 
                     <input id="uploadFilesRegions" name="uploadFilesRegions" type="file" accept=".bed" hidden>
-                    <div id="RegionsLabel" hidden><b>Control bed file</b></div>
+                    <!--<div id="RegionsLabel" hidden><b>Control bed file</b></div>
                     <input id="uploadFilesRegions_treat" name="uploadFilesRegions_treat" type="file" accept=".bed" hidden>
-                    <div id="RegionsLabel_treat" hidden><b>Treatment bed file</b></div>
+                    <div id="RegionsLabel_treat" hidden><b>Treatment bed file</b></div>-->
 
                     <input id="uploadFilesIndex1" name="uploadFilesIndex1" type="file" accept=".bed" hidden>
                     <label id="HiCLabel1" hidden><b>Index file of control Hi-C sample</b></label>
@@ -192,8 +192,8 @@
 
                     <p id="geneFileType">Genelist must be <b>official gene symbol</b> in .txt format (each name in a row). More than 100 genes is recommended.</p>
                     <p id="chipFileType" hidden>ChIP-seq must be <b>mapped reads data files</b> in .bed/.bam format in the corresponding genome assembly.</p>
-                    <p id="regionsFileType1" hidden>Input bed file must adhere to the <b>bed3 format</b> in its first three columns.</p>
-                    <p id="regionsFileType2" hidden>Input bed files must adhere to the <b>bed3 format</b> in its first three columns. The control bed file serves as a background for profiling the treatment bed file.</p>
+                    <!-- <p id="regionsFileType1" hidden>Input bed file must adhere to the <b>bed3 format</b> in its first three columns.</p>
+                    <p id="regionsFileType2" hidden>Input bed files must adhere to the <b>bed3 format</b> in its first three columns. The control bed file serves as a background for profiling the treatment bed file.</p> -->
                     <p id="regionsFileType3" hidden>Input bed file must adhere to the <b>bed6 format</b>, with the score at the 5th column (starting from 1).</p>
                     <p id="HiCFileType" hidden>Input for differential HiC BART are <b>matrix (.matrix) and index (.bed) for control and treatment HiC samples in cooler format</b> in the corresponding genome assembly.</p>
                   </div>
@@ -601,9 +601,9 @@
           $('#HiCFileType').prop("hidden", true);
           $('#geneFileType').prop("hidden", true);
           $('#chipFileType').prop("hidden", true);
-          $('#regionsFileType1').removeAttr('hidden');
+          $('#regionsFileType3').removeAttr('hidden');
           $('#regionsFileType2').prop("hidden", true);
-          $('#regionsFileType3').prop("hidden", true);
+          $('#regionsFileType1').prop("hidden", true);
 
           $('input:radio[name=region_type]')[0].checked = true;
           $('#uploadFilesRegions').prop('disabled', false);
@@ -617,6 +617,24 @@
           $('#uploadFilesMatrix2').val('');
           $('#uploadFilesIndex1').val('');
           $('#uploadFilesIndex2').val('');
+
+          // Because we are using only scored regoins now, copy the option here
+          $('#uploadFilesRegions').removeAttr('hidden');
+          $('#RegionsLabel').prop('hidden', true);
+          $('#uploadFilesRegions_treat').prop('hidden', true);
+          $('#RegionsLabel_treat').prop('hidden', true);
+
+          $('#uploadFilesRegions').prop('required', true);
+          $('#uploadFilesRegions_treat').removeAttr('required');
+
+          $('#regionsFileType1').prop("hidden", true);
+          $('#regionsFileType2').prop("hidden", true);
+          $('#regionsFileType3').removeAttr('hidden');
+
+          $('#uploadFilesRegions').prop('disabled', false);
+          $('#uploadFilesRegions').attr("accept", ".bed");
+
+          $('#uploadFilesRegions_treat').val('');
           break;
           
         
@@ -696,7 +714,7 @@
     });
     </script>
 
-    <script>
+    <!-- <script>
     //different region types
     $('input[name=region_type]').on('change', function() {
       var n = $(this).val();
@@ -764,7 +782,7 @@
         break;
         }
       });  
-    </script>
+    </script> -->
 
   </body>
 </html>
