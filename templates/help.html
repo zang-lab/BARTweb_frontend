@@ -42,7 +42,7 @@
           <h5>Submit a job</h5>
           <p>The first three options (species, data type and input data) are required. </p>
           <p><strong>Species</strong>: Currently, only human (hg38) and mouse (mm10) genomes are supported. </p>
-          <p><strong>Input data type</strong>: A gene list has to be official gene symbols in text format. ChIP-seq data can be mapped reads in either BAM or BED format. Please make sure that the ChIP-seq data are mapped to the correct genome version (hg38 or mm10).</p>
+          <p><strong>Input data type</strong>: A gene list has to be official gene symbols in text format. ChIP-seq data can be mapped reads in either BAM or BED format. The region input has to be a BED file with scored, non-overlapping intervals, for example, ChIP-seq peaks. The scores have to be on 5<sup>th</sup> row of the BED file. Please make sure that the ChIP-seq data or scored bed file are mapped to the correct genome version (hg38 or mm10).</p>
           <p>If an email address is provided, BARTweb will send email notifications with the job key, job status, and the result URL.</p>
           <p>After clicking the “Submit” button, BARTweb will redirect to the result page.</p>
           <br>
