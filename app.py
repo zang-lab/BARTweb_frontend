@@ -181,6 +181,7 @@ def index():
 
             parseIO.init_user_config(user_path, user_data)
             parseIO.prepare_bart(user_data)
+            parseIO.site_stats()
 
             if useremail != "":  
                 logger.info("Init project: send e-mail to {} for {}".format(useremail, user_key))    

@@ -439,6 +439,29 @@ def irwin_hall_cdf(x,n):
         k+=1
     return value/(np.exp(logfac(n)))
 
+def site_stats():
+    stats = {}
+    usercase_dir = os.path.join(PROJECT_DIR, 'usercase')
+    log_dir = os.path.join(PROJECT_DIR, 'usercase','log')
+    usercases = os.listdir(usercase_dir)
+    number_of_submissions = len(usercases)
+    stats['total_cases'] = number_of_submissions
+    user_emails = []
+    for user_dir in usercases:
+        if os.path.isdir(os.path.join(usercase_dir, user_dir)):
+            user_data = get_user_data(user_dir)
+            user_email = user_data['user_email']
+            if user_email not in user_emails:
+                user_emails.append(user_email)
+    number_of_emails = len(user_emails)
+    stats = {}
+    stats['number_of_submissions'] = number_of_submissions
+    stats['number_of_emails'] = number_of_emails
+    stats['list_of_emails'] = user_emails
+    stats_file = os.path.join(log_dir, 'site_stats.yaml')
+    with open(stats_file, 'w') as fopen:
+        yaml.safe_dump(stats, fopen, encoding='utf-8', allow_unicode=True, default_flow_style=False)
+
 
 if __name__ == '__main__':
     parse_bart_results('/Users/marvin/Projects/flask_playground/usercase/a_1534972940.637962/download/genelist1_bart_results.txt')
