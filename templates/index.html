@@ -122,11 +122,29 @@
                   <option id="regions" value="regions">Region set (Beta)</option>
                   <!-- <option id="HiC" value="HiC" hidden>Differential Hi-C</option> -->
                 </select> 
-                <align id="sample" class="col-md-9 mb-3">
+
+                <!-- Genelist sample BAM data -->
+                <align id="sample_gene" class="col-md-9 mb-3">
                   <a href="/sample/genelist" download>
                     <button class="btn btn-lg btn-secondary btn-outline-primary btn-sm" type="button">Download hg38 gene list sample</button>
                   </a>
                   <img src="{{ url_for('static', filename='question-mark.svg') }}" style="width:16px; vertical-align:middle" title="This sample gene list file contains down-regulated genes upon shRNA knock-down of POU5F1 in human embryonic stem cell line H1. You can download it, upload by yourself and submit your job, or refer to the pre-run result."/>
+                </align>
+
+                <!-- ChIP-seq sample BAM data -->
+                <align id="sample_ChIP" class="col-md-9 mb-3" hidden>
+                  <a href="/sample/ChIPseq.bam" download>
+                    <button class="btn btn-lg btn-secondary btn-outline-primary btn-sm" type="button">Download hg38 ChIP-seq sample</button>
+                  </a>
+                  <img src="{{ url_for('static', filename='question-mark.svg') }}" style="width:16px; vertical-align:middle" title="This sample ChIP-seq BAM file contains human AR ChIP-seq sample mapped to hg38. You can download it, upload by yourself and submit your job."/>
+                </align>
+
+                <!-- Region sample ChIP-seq peak data -->
+                <align id="sample_Region" class="col-md-9 mb-3" hidden>
+                  <a href="/sample/ChIPpeaks.bed" download>
+                    <button class="btn btn-lg btn-secondary btn-outline-primary btn-sm" type="button">Download hg38 Region set sample</button>
+                  </a>
+                  <img src="{{ url_for('static', filename='question-mark.svg') }}" style="width:16px; vertical-align:middle" title="This sample region set BED file contains human CTCF ChIP-seq peaks called in hg38. You can download it, upload by yourself and submit your job."/>
                 </align>
          
               </div>
@@ -301,7 +319,7 @@
           var forms = document.getElementsByClassName('needs-validation');
 
           //check user uploaded gene counts when a gene list file is selected
-          function showLength(fileUploadEvent) {
+          function showLength_gene(fileUploadEvent) {
             var reader = new FileReader();
             // set up the event handler for when the file is loaded
             reader.onload = function() {
@@ -315,8 +333,22 @@
             reader.readAsText(fileUploadEvent.target.files[0]);
           }
 
-          document.getElementById('uploadFilesGenelist').addEventListener('change', showLength);
+          function showLength_region(fileUploadEvent) {
+            var reader = new FileReader();
+            // set up the event handler for when the file is loaded
+            reader.onload = function() {
+              var dataLength = reader.result.split("\n").length;
+              if (dataLength<1000) {
+                  alert("The uploaded region list contains less than 1000 regions. This may cause error or the result may not be optimal.");
+              }
+              
+            }
+            // fire off 
+            reader.readAsText(fileUploadEvent.target.files[0]);
+          }
 
+          document.getElementById('uploadFilesGenelist').addEventListener('change', showLength_gene);
+          document.getElementById('uploadFilesRegions').addEventListener('change', showLength_region);
 
           // Loop over them and prevent submission
           var validation = Array.prototype.filter.call(forms, function(form) {
@@ -440,7 +472,10 @@
           $('#region_type_selection').prop("hidden", true);
 
           $('#progressBar').prop("hidden", true);
-          $('#sample').prop('hidden', true);
+          
+          $('#sample_gene').prop('hidden', true);
+          $('#sample_Region').prop('hidden', true);
+          $('#sample_ChIP').removeAttr('hidden');
 
           $('#uploadFilesProfile').removeAttr('hidden');
           $('#uploadFilesGenelist').prop('hidden', true);
@@ -502,7 +537,10 @@
 
 
           $('#progressBar').prop("hidden", true);
-          $('#sample').removeAttr('hidden');
+
+          $('#sample_gene').removeAttr('hidden');
+          $('#sample_ChIP').prop("hidden", true);
+          $('#sample_Region').prop("hidden", true);
 
           $('#uploadFilesGenelist').removeAttr('hidden');
           $('#uploadFilesProfile').prop("hidden", true);
@@ -567,7 +605,10 @@
           $('#region_type_selection').removeAttr('hidden');
 
           $('#progressBar').prop("hidden", true);
-          $('#sample').prop('hidden', true);
+
+          $('#sample_gene').prop('hidden', true);
+          $('#sample_ChIP').prop('hidden', true);
+          $('#sample_Region').removeAttr('hidden');
 
           $('#uploadFilesProfile').prop('hidden', true);
           $('#uploadFilesGenelist').prop('hidden', true);
@@ -640,7 +681,7 @@
         
         case 'HiC':
           $('#progressBar').prop("hidden", true);
-          $('#sample').prop('hidden', true);
+          $('#sample_gene').prop('hidden', true);
 
           $('#uploadFilesProfile').prop('hidden', true);
           $('#uploadFilesGenelist').prop('hidden', true);
