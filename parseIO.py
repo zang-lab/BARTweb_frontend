@@ -448,10 +448,10 @@ def site_stats():
     stats['total_cases'] = number_of_submissions
     user_emails = []
     for user_dir in usercases:
-        if os.path.isdir(os.path.join(usercase_dir, user_dir)):
+        if os.path.isdir(os.path.join(usercase_dir, user_dir)) and os.path.isfile(os.path.join(usercase_dir, user_dir,'user.config')):
             user_data = get_user_data(user_dir)
             user_email = user_data['user_email']
-            if user_email not in user_emails:
+            if (user_email not in user_emails) and (user_email != '') :
                 user_emails.append(user_email)
     number_of_emails = len(user_emails)
     stats = {}
@@ -461,6 +461,7 @@ def site_stats():
     stats_file = os.path.join(log_dir, 'site_stats.yaml')
     with open(stats_file, 'w') as fopen:
         yaml.safe_dump(stats, fopen, encoding='utf-8', allow_unicode=True, default_flow_style=False)
+    return None
 
 
 if __name__ == '__main__':
