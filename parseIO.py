@@ -255,7 +255,7 @@ def generate_bart_file_results(user_data):
                 dest_file_url = '/download/%s___%s' % (user_data['user_key'], bart_file)
                 bart_file_results['bart_result_files'].append((bart_file, dest_file_url))
 
-            if '_enhancer_prediction_lasso.txt' in bart_file:
+            if '_prediction_lasso.txt' in bart_file:
                 src_file = os.path.join(root, bart_file)
                 dest_file_url = '/download/%s___%s' % (user_data['user_key'], bart_file)
                 bart_file_results['bart_result_files'].append((bart_file, dest_file_url))
@@ -309,7 +309,7 @@ def is_bart_done(user_data):
                 count = count+1
             if '_adaptive_lasso_Info.txt' in file: 
                 count = count+1
-            if '_enhancer_prediction_lasso.txt' in file: 
+            if '_prediction_lasso.txt' in file: 
                 count = count+1
         if count==4:
             done = True

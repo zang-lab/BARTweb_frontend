@@ -30,7 +30,7 @@
     <div class="container">
         <div class="py-3">
           <h3><font color="#002F6C">BARTweb help page</font></h3>
-          <p>BARTweb is an interactive web server to predict functional transcription regulators that regulate a given gene list or associate with a genomic profile. It is a web interface to <a href="https://github.com/zanglab/bart2" target="_blank"> BART Python package</a>.</p>
+          <p>BARTweb is an interactive web server to predict functional transcriptional regulators that regulate a given gene list or associate with a genomic profile. It is a web interface to <a href="https://github.com/zanglab/bart2" target="_blank"> BART Python package</a>.</p>
           <p>If you use BARTweb in your data analysis or publish the results of BARTweb, please cite the following paper in the main text of your manuscript: </p>
           <ul>
           <li>Zhenjia Wang, Mete Civelek, Clint Miller, Nathan Sheffield, Michael J. Guertin, Chongzhi Zang.  BART: a transcription factor prediction tool with query gene sets or epigenomic profiles. <em>Bioinformatics</em>, <strong>34</strong>, 2867–2869 (2018). DOI: <a href='https://doi.org/10.1093/bioinformatics/bty194' target="_new">10.1093/bioinformatics/bty194</a></li>
@@ -54,10 +54,10 @@
           <h4>How to interpret the BART result</h4>
           <p><img src="{{ url_for('static', filename='bartweb2_result.png') }}" alt='bartweb_result' referrerPolicy='no-referrer' width="1000"/></p>
           <br>
-          <h5>Output 1: Transcription regulator (TR) prediction table</h5>
+          <h5>Output 1: Transcriptional regulator (TR) prediction table</h5>
           <p>We take this sub-table of a <a href='http://bartweb.org/result?user_key=test_POU5F1_15751798580178106'>pre-run result</a> as an example to illustrate.</p>
           <ul>
-          <li><strong>TR</strong> (Column 1): Transcription regulator name. When clicking a TR name, the analysis plots for this TR will be shown in a pop-up window.</li>
+          <li><strong>TR</strong> (Column 1): Transcriptional regulator name. When clicking a TR name, the analysis plots for this TR will be shown in a pop-up window.</li>
           </ul>
           <ul>
           <li><strong>Wilcoxon test statistic &amp; P-value</strong> (Columns 2 &amp; 3): These two values indicate the level of association of each TR under the background of all other TRs. For each TR, we use Wilcoxon rank-sum test to compare the association scores from all ChIP-seq datasets for that regulator with the association scores from all ChIP-seq datasets for other TRs.</li>
@@ -76,7 +76,7 @@
           </ul>
           <br>
           <h5>Output 2: Data files and figure images</h5>
-          <p>Besides the transcription regulator table, other output data files are also available for download, including the predicted genomic regulatory (cis-regulatory element) profile and analysis plots for each regulator. The image files are in high resolution with publication quality.</p>
+          <p>Besides the transcriptional regulator table, other output data files are also available for download, including the predicted genomic regulatory (cis-regulatory element) profile and analysis plots for each regulator. The image files are in high resolution with publication quality.</p>
                       
         </div>
 
