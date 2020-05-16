@@ -77,6 +77,15 @@
           <br>
           <h5>Output 2: Data files and figure images</h5>
           <p>Besides the transcriptional regulator table, other output data files are also available for download, including the predicted genomic regulatory (cis-regulatory element) profile and analysis plots for each regulator. The image files are in high resolution with publication quality.</p>
+          <ul>
+          <li><strong>*_adaptive_lasso_Info.txt</strong> provides regression information tells which representative H3K27ac samples are selected along with coefficients through adaptive lasso regression and sample annotations including cell line, cell type or tissue type. This is the output only generated in geneset mode.</li>
+          </ul>
+          <ul>
+          <li><strong>*_CRE_prediction_lasso.txt</strong> is the predicted cis-regulatory profile of the input gene set and is a ranked list of all CREs (UDHS) in the genome. The higher the score, the more likely the regulatory element regulates the input gene set. This is the output only generated in geneset mode.</li>
+          </ul>
+          <ul>
+          <li><strong>*_auc.txt</strong> provides the association score of each of the TR ChIP-seq dataset with the genome cis-regulatory profile.</li>
+          </ul>
                       
         </div>
 
