@@ -261,8 +261,8 @@ def help():
                 logger.error("Retrieve result: did not find the result.")
                 err_msg = "Job does not exist, make sure you enter the right key."
                 return redirect(url_for('error_page', msg=err_msg))
-
     return render_template('help.html')
+
 
 #############################################
 
