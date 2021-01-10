@@ -47,7 +47,20 @@
           <h5>Submit a job</h5>
           <p>The first three options (species, data type and input data) are required. </p>
           <p><strong>Species</strong>: Currently, only human (hg38) and mouse (mm10) genomes are supported. </p>
-          <p><strong>Input data type</strong>: A gene list has to be official gene symbols in text format. ChIP-seq data can be mapped reads in either BAM or BED format. The region input (under BETA testing) has to be a BED file with scored, non-overlapping intervals, for example, ChIP-seq peaks. The scores have to be on 5<sup>th</sup> row of the BED file. Please make sure that the ChIP-seq data or scored bed file are mapped to the correct genome version (hg38 or mm10).</p>
+          <p><strong>Input data type</strong>: 
+            <ul>
+            <li><strong>Gene list</strong>: A gene list has to be official gene symbols (HGNC for human or MGI for mouse) in text format. BARTweb can identify functional Transcription Regulators (TRs) that regulate the gene set. At least 100 genes are recommended in the input.
+            </ul>
+
+            <ul>
+            <li><strong>ChIP-seq data</strong>: ChIP-seq data can be mapped reads in either BAM or BED format. BARTweb can identify TRs have a binding profile correlated with a ChIP-seq profile. At least 1 million reads are recommended in the input.
+            </ul>
+
+            <ul>
+            <li><strong>Region (under BETA testing)</strong>: The region input has to be a BED file with scored, non-overlapping intervals, for example, ChIP-seq peaks. The scores have to be on 5<sup>th</sup> row of the BED file. Please make sure that the ChIP-seq data or scored bed file are mapped to the correct genome version (hg38 or mm10). BARTweb can identify TRs enriched in a genomic region set.
+            </ul>
+
+
           <p>If an email address is provided, BARTweb will send email notifications with the job key, job status, and the result URL.</p>
           <p>After clicking the “Submit” button, BARTweb will redirect to the result page.</p>
           <br>
@@ -60,7 +73,7 @@
           <p><img src="{{ url_for('static', filename='bartweb2_result.png') }}" alt='bartweb_result' referrerPolicy='no-referrer' width="1000"/></p>
           <br>
           <h5>Output 1: Transcriptional regulator (TR) prediction table</h5>
-          <p>We take this sub-table of a <a href="{{ url_for('sample_result', sample_type='genelist')}}">pre-run result</a> as an example to illustrate.</p>
+          <p>We take this sub-table of a <a href="{{ url_for('sample_result', sample_type='genelist')}}">pre-run result</a> (from a gene set that were downregulated upon OCT4(POU5F1) knocked down in a human embryonic stem cell line as an example to illustrate. Another <a href="{{ url_for('sample_result', sample_type='ChIPdata')}}">pre-run result</a> (from a ChIP-seq profile upon AR being enhanced in a human prostatic carcinoma cell line (LNCaP)) is also provided as reference for ChIP-seq data input.</p>
           <ul>
           <li><strong>TR</strong> (Column 1): Transcriptional regulator name. When clicking a TR name, the analysis plots for this TR will be shown in a pop-up window.</li>
           </ul>

@@ -333,10 +333,10 @@ def download_sample_file(sample_type):
     if sample_type == 'genelist':
         sample_name = "genelist.txt"
         sample_path = os.path.join(PROJECT_DIR, 'sample/genelist/upload')
-    elif sample_type == 'ChIPseq.bam':
+    elif sample_type == 'ChIPdata':
         sample_name = "ChIPseq.bam"
-        sample_path = os.path.join(PROJECT_DIR, 'sample/ChIPdata')
-    elif sample_type == 'ChIPpeaks.bed':
+        sample_path = os.path.join(PROJECT_DIR, 'sample/ChIPdata/upload')
+    elif sample_type == 'ChIPpeaks':
         sample_name = "ChIPpeaks.bed"
         sample_path = os.path.join(PROJECT_DIR, 'sample/Region')
 
