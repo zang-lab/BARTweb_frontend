@@ -133,7 +133,7 @@
 
                 <!-- ChIP-seq sample BAM data -->
                 <align id="sample_ChIP" class="col-md-9 mb-3" hidden>
-                  <a href="/sample/ChIPseq.bam" download>
+                  <a href="/sample/ChIPdata" download>
                     <button class="btn btn-lg btn-secondary btn-outline-primary btn-sm" type="button">Download hg38 ChIP-seq sample</button>
                   </a>
                   <img src="{{ url_for('static', filename='question-mark.svg') }}" style="width:16px; vertical-align:middle" title="This sample ChIP-seq BAM file contains human AR ChIP-seq sample mapped to hg38. You can download it, upload by yourself and submit your job."/>
@@ -141,7 +141,7 @@
 
                 <!-- Region sample ChIP-seq peak data -->
                 <align id="sample_Region" class="col-md-9 mb-3" hidden>
-                  <a href="/sample/ChIPpeaks.bed" download>
+                  <a href="/sample/ChIPpeaks" download>
                     <button class="btn btn-lg btn-secondary btn-outline-primary btn-sm" type="button">Download hg38 Region set sample</button>
                   </a>
                   <img src="{{ url_for('static', filename='question-mark.svg') }}" style="width:16px; vertical-align:middle" title="This sample region set BED file contains human CTCF ChIP-seq peaks called in hg38. You can download it, upload by yourself and submit your job."/>
