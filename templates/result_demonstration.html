@@ -153,13 +153,13 @@
                 time = new Date().getTime();
             });
             function refresh() {
-                if(new Date().getTime() - time >= 30000) 
+                if(new Date().getTime() - time >= 10000) 
                     window.location.reload(true);
                 else 
-                    setTimeout(refresh, 30000);
+                    setTimeout(refresh, 10000);
             }
 
-            setTimeout(refresh, 30000);
+            setTimeout(refresh, 10000);
           }
           var brTag = document.createElement("br");
           document.getElementById("resultOutputDiv").appendChild(brTag);

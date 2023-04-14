@@ -19,7 +19,6 @@ RUN apt-get update && apt-get install -y apache2 \
 
 # && do not continue if any fails
 
-
 # ADD . /app
 COPY ./requirements.txt /BARTweb/requirements.txt
 # RUN pip install uwsgi
