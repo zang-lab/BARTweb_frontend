@@ -291,6 +291,10 @@ def get_result():
 
         results = parseIO.generate_results(user_data)
         results['sample'] = False
+
+        ## @marvinquite 02/25/2024, debug purpose
+        logger.info(results)
+        ## end 
         return render_template('result_demonstration.html', results=results, key=request.args['user_key'])
 
 @app.route('/error', methods=['GET', 'POST'])
