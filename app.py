@@ -293,7 +293,8 @@ def get_result():
         results['sample'] = False
 
         ## @marvinquite 02/25/2024, debug purpose
-        logger.info(results)
+        # logger.info(results)
+        ## Results can be accurately retrieved 04/16/2024 
         ## end 
         return render_template('result_demonstration.html', results=results, key=request.args['user_key'])
 
