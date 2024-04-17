@@ -298,6 +298,8 @@ def is_bart_done(user_data):
     bart_output_dir = os.path.join(user_data['user_path'], 'download/')
     files = os.listdir(bart_output_dir)
     count = 0
+    ## --- @marvinquiet 04/16/2024, debug purpose
+    # it seems that under Geneset, there are only three files generated
     if user_data['dataType'] == 'Geneset':
         for file in files:
             if utils.is_file_zero(os.path.join(bart_output_dir, file)):
@@ -309,10 +311,12 @@ def is_bart_done(user_data):
                 count = count+1
             if '_adaptive_lasso_Info.txt' in file: 
                 count = count+1
-            if '_prediction_lasso.txt' in file: 
+            if '_prediction_lasso.txt' in file:  # this seems to be missing in the new bart2
                 count = count+1
-        if count==4:
+        # if count==4:
+        if count == 3
             done = True
+    ## ---
     if user_data['dataType'] == 'ChIP-seq' or user_data['dataType'] == 'regions' or user_data['dataType'] == 'HiC':
         for file in files:
             if utils.is_file_zero(os.path.join(bart_output_dir, file)):
