@@ -356,7 +356,7 @@ def sample_result(sample_type):
 
     user_data = {}
     with open(config_file, 'r') as fopen:
-        user_data = yaml.load(fopen)
+        user_data = yaml.load(fopen, Loader=yaml.FullLoader)
 
     if user_data:
         results = parseIO.generate_results(user_data)

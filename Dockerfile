@@ -22,7 +22,7 @@ RUN apt-get update && apt-get install -y apache2 \
 # ADD . /app
 COPY ./requirements.txt /BARTweb/requirements.txt
 # RUN pip install uwsgi
-RUN pip3 install -r /BARTweb/requirements.txt
+RUN pip3 install --break-system-packages -r /BARTweb/requirements.txt
 
 # Copy over the apache configuration file and enable the site
 COPY ./apache-flask.conf /etc/apache2/sites-available/apache-flask.conf
@@ -41,7 +41,10 @@ EXPOSE 80
 # ENV HOME /app change to apache-flask
 WORKDIR /BARTweb/
 
-# For log
+# For log -> in 20230401j docker image
+RUN mkdir /log && touch /log/bartweb.log
+RUN chown -R www-data:www-data /log
+# original For log
 RUN mkdir -p usercase/log
 RUN touch usercase/log/bartweb.log
 RUN chown -R www-data:www-data usercase/log
@@ -49,4 +52,3 @@ RUN chmod -R 775 usercase/log
 
 #run apache, this directory is present with installation of apache
 CMD ["/usr/sbin/apache2ctl", "-D", "FOREGROUND"]
-

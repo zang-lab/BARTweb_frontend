@@ -102,7 +102,7 @@ def get_user_data(user_key):
         return None
 
     with open(config_file, 'r') as fopen:
-        user_data = yaml.load(fopen)
+        user_data = yaml.load(fopen, Loader=yaml.FullLoader)
 
     return user_data
 
@@ -314,7 +314,7 @@ def is_bart_done(user_data):
             if '_prediction_lasso.txt' in file:  # this seems to be missing in the new bart2
                 count = count+1
         # if count==4:
-        if count == 3
+        if count >= 3:
             done = True
     ## ---
     if user_data['dataType'] == 'ChIP-seq' or user_data['dataType'] == 'regions' or user_data['dataType'] == 'HiC':
