@@ -1,5 +1,5 @@
 ARG BASE_TAG
-FROM ghcr.io/uvarc/bartweb_frontend_base:${BASE_TAG}
+FROM ${BASE_TAG}
 # ADD . /app
 COPY ./requirements.txt /BARTweb/requirements.txt
 # RUN pip install uwsgi
