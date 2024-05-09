@@ -1,6 +1,5 @@
-# FROM Dockerfile_debian_20240506_fixed  # not sure if this would be the correct name for it
-# MAINTAINER Wenjing Ma mawenjing1993@gmail.com
-
+ARG BASE_TAG
+FROM ghcr.io/uvarc/bartweb_frontend_base:${BASE_TAG}
 # ADD . /app
 COPY ./requirements.txt /BARTweb/requirements.txt
 # RUN pip install uwsgi
