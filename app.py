@@ -261,8 +261,8 @@ def help():
                 logger.error("Retrieve result: did not find the result.")
                 err_msg = "Job does not exist, make sure you enter the right key."
                 return redirect(url_for('error_page', msg=err_msg))
-
     return render_template('help.html')
+
 
 #############################################
 
@@ -291,6 +291,11 @@ def get_result():
 
         results = parseIO.generate_results(user_data)
         results['sample'] = False
+
+        ## @marvinquite 02/25/2024, debug purpose
+        # logger.info(results)
+        ## Results can be accurately retrieved 04/16/2024 
+        ## end 
         return render_template('result_demonstration.html', results=results, key=request.args['user_key'])
 
 @app.route('/error', methods=['GET', 'POST'])
@@ -333,10 +338,10 @@ def download_sample_file(sample_type):
     if sample_type == 'genelist':
         sample_name = "genelist.txt"
         sample_path = os.path.join(PROJECT_DIR, 'sample/genelist/upload')
-    elif sample_type == 'ChIPseq.bam':
+    elif sample_type == 'ChIPdata':
         sample_name = "ChIPseq.bam"
-        sample_path = os.path.join(PROJECT_DIR, 'sample/ChIPdata')
-    elif sample_type == 'ChIPpeaks.bed':
+        sample_path = os.path.join(PROJECT_DIR, 'sample/ChIPdata/upload')
+    elif sample_type == 'ChIPpeaks':
         sample_name = "ChIPpeaks.bed"
         sample_path = os.path.join(PROJECT_DIR, 'sample/Region')
 
@@ -351,7 +356,7 @@ def sample_result(sample_type):
 
     user_data = {}
     with open(config_file, 'r') as fopen:
-        user_data = yaml.load(fopen)
+        user_data = yaml.load(fopen, Loader=yaml.FullLoader)
 
     if user_data:
         results = parseIO.generate_results(user_data)

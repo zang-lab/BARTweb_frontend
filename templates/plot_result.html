@@ -42,7 +42,7 @@
         </div>
 
         <div class="col-md-6 mb-3">
-          <p id="rankScore">TF Prediction Ranks</p>
+          <p id="rankScore">TR Prediction Ranks</p>
           <svg id="rankdot" width="300" height="300"></svg>
           <button id="rankdotButton">download PNG</button>
         </div>
@@ -293,7 +293,7 @@
                 "translate(" + ((width - margin.right + margin.left)/2) + " ," +
                               (height - 10) + ")")
           .style("text-anchor", "middle")
-          .text("TF Rank");
+          .text("TR Rank");
         rankdot.append('g')
             .attr('class', 'y axis')
             .attr('transform', 'translate(' + (margin.left) + ',0)')

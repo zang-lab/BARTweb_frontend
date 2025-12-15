@@ -153,13 +153,13 @@
                 time = new Date().getTime();
             });
             function refresh() {
-                if(new Date().getTime() - time >= 30000) 
+                if(new Date().getTime() - time >= 10000) 
                     window.location.reload(true);
                 else 
-                    setTimeout(refresh, 30000);
+                    setTimeout(refresh, 10000);
             }
 
-            setTimeout(refresh, 30000);
+            setTimeout(refresh, 10000);
           }
           var brTag = document.createElement("br");
           document.getElementById("resultOutputDiv").appendChild(brTag);
@@ -195,7 +195,7 @@
             columns:[
               // use hover toolkits for each column
               // click TF name, trigger plot window
-              {title: "TF", field: "tf_name", align:"center", width: 120, headerTooltip:"Transcription Factor names",
+              {title: "TR", field: "tf_name", align:"center", width: 120, headerTooltip:"Transcriptional Regulators names",
               cellClick:function(e, cell){
                   //e - the click event object
                   //cell - cell componen;
@@ -216,31 +216,31 @@
                   align:"center", 
                   sorter: "number", 
                   headerSortStartingDir: "asc", 
-                  headerTooltip: "Wilcoxon rank-sum test comparing the set of association scores from one TF with all the association scores. Higher the test score is, more likely the TF regulates the input."
+                  headerTooltip: "Wilcoxon rank-sum test comparing the set of association scores from one TR with all the association scores. Higher the test score is, more likely the TR regulates the input."
               },
               {title: "Wilcoxon P-value", 
                   field: "p_value", 
                   align:"center", 
                   sorter: "number", 
-                  headerTooltip: "One-sided P-value of the Wilcoxon rank-sum test. Smaller P-value is, more siginificant the TF regulates the input."
+                  headerTooltip: "One-sided P-value of the Wilcoxon rank-sum test. Smaller P-value is, more siginificant the TR regulates the input."
               },
               {title: "Z-score", 
                   field: "z_score", 
                   align:"center", 
                   sorter: "number", 
-                  headerTooltip: "Z-score indicates the deviation of the TF Wilcoxon test score from its background model, which is generated from MSigDB gene sets and H3K27ac profiles. The background model contains the Wilcoxon test score for each TF and each profile. "
+                  headerTooltip: "Z-score indicates the deviation of the TR Wilcoxon test score from its background model, which is generated from MSigDB gene sets and H3K27ac profiles. The background model contains the Wilcoxon test score for each TR and each profile. "
               },
               {title: "max AUC", 
                   field: "max_auc", 
                   align:"center", 
                   sorter: "number", 
-                  headerTooltip: "Maximum association score of each TF in its datasets indicating the specific binding pattern of one dataset has the highest correlation with the input."
+                  headerTooltip: "Maximum association score of each TR in its datasets indicating the specific binding pattern of one dataset has the highest correlation with the input."
               },
               {title: "Relative rank", 
                   field: "r_rank", 
                   align:"center", 
                   sorter: "number", 
-                  headerTooltip: "Average the rank from Wilcoxon P-value, Z-score, and max association score and then divide the absolute rank by the total TF numbers."
+                  headerTooltip: "Average the rank from Wilcoxon P-value, Z-score, and max association score and then divide the absolute rank by the total TR numbers."
               },
             ],
           });

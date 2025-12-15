@@ -8,6 +8,7 @@ import boto3
 import smtplib
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
+from email.message import EmailMessage
 
 # for logging
 from logging.handlers import RotatingFileHandler
@@ -54,17 +55,12 @@ def send_email(user_mail, user_key, email_type):
     - Error: when job finishes with an error
     '''
 
-    # TODO: encryot
-    HOST_ADDRESS = os.environ.get("HOST_ADDRESS")
-    PASSWORD = os.environ.get("PASSWORD")
+    msg = EmailMessage()
+    server = smtplib.SMTP('out.mail.virginia.edu')
+    FROM = "bartweb@virginia.edu"
+    # BCC = ["nmagee@gmail.com"]
+    BCC = ["zanglab.service@gmail.com"]
     
-    if HOST_ADDRESS == None or PASSWORD == None:
-        return False, "errors in getting email address and password from environment.."
-
-    msg = MIMEMultipart()
-    msg['From'] = HOST_ADDRESS
-    msg['To'] = user_mail
-
     message = ""
     # === when user submits a job
     if email_type == 'Submit':
@@ -73,16 +69,16 @@ def send_email(user_mail, user_key, email_type):
         message = '''
 Hi there,
 
-Thank you for using BART web!
+Thank you for using BART web! This is an automated message. Do not reply to this email.
 
 Here is your key: {}
 
-When the job is done, you can ge the results through this link: {}
+When the job is done, you can ge the results through this link:\n {}
 '''.format(user_key, 'http://bartweb.org/result?user_key='+user_key)
 
     # === when job finishes successfully
     if email_type == 'Done':
-        msg['Subject'] = "BART result"
+        msg['Subject'] = "BART Result"
         message = '''
 Congratulations! Your BART job is done!
 
@@ -91,9 +87,9 @@ Please get the results through this link: {}
 
     # === when job finishes with an error
     if email_type == 'Error':
-        msg['Subject'] = "BART error"
+        msg['Subject'] = "BART Error"
         message = '''
-Unfortunately, your BART job ends with errors.
+Unfortunately, your BART job has experienced an error.
 
 Please check whether you chose the correct species or uploaded the required format file.
 
@@ -102,13 +98,13 @@ Or reach us at yz4hc@virginia.edu with your key: {}
 '''.format(user_key)
 
     msg.attach(MIMEText(message, 'plain'))
-    server = smtplib.SMTP_SSL("smtp.gmail.com")
     try:
-        server.login(HOST_ADDRESS, PASSWORD)
-        msg = msg.as_string()
-        server.sendmail(HOST_ADDRESS, user_mail, msg)
-    except smtplib.SMTPAuthenticationError:
-        return False, "username or password is wrong"
+        msg.set_content(message)
+        msg['From'] = FROM
+        msg['To'] = user_mail
+        msg['Bcc'] = BCC
+        # server.sendmail(FROM, user_mail, msg)
+        server.send_message(msg)
     except:
         return False, "errors in sending key to e-mail..."
     finally:

@@ -30,19 +30,39 @@
     <div class="container">
         <div class="py-3">
           <h3><font color="#002F6C">BARTweb help page</font></h3>
-          <p>BARTweb is an interactive web server to predict functional transcription factors that regulate a given gene list or associate with a genomic profile. It is a web interface to <a href='http://faculty.virginia.edu/zanglab/bart/index.htm'>BART Python package</a>. </p>
-          <p>If you use BARTweb in your data analysis or publish the results of BARTweb, please cite the following paper in the main text of your manuscript: </p>
+          <p>BARTweb is an interactive web server to predict functional transcriptional regulators that regulate a given gene list or associate with a genomic profile. It is a web interface to <a href="https://github.com/zanglab/bart2" target="_blank"> BART Python package</a>.</p>
+          <p>If you use BARTweb in your data analysis or publish the results of BARTweb, please cite the following papers in the main text of your manuscript: </p>
           <ul>
-          <li>Zhenjia Wang, Mete Civelek, Clint Miller, Nathan Sheffield, Michael J. Guertin, Chongzhi Zang.  BART: a transcription factor prediction tool with query gene sets or epigenomic profiles. <em>Bioinformatics</em>, <strong>34</strong>, 2867–2869 (2018). DOI: <a href='https://doi.org/10.1093/bioinformatics/bty194' target="_new">10.1093/bioinformatics/bty194</a></li>
+              <li> Wenjing Ma, Zhenjia Wang, Yifan Zhang, Neal E. Magee, Yayi Feng, Ruoyao Shi, Yang Chen, Chongzhi Zang. BARTweb: a web server for transcriptional regulator association analysis. <em> NAR Genomics and Bioinformatics</em>, (2021). DOI: <a href='https://doi.org/10.1093/nargab/lqab022' target="_new">10.1093/nargab/lqab022</a></li>
+
+              <li>Zhenjia Wang, Mete Civelek, Clint Miller, Nathan Sheffield, Michael J. Guertin, Chongzhi Zang.  BART: a transcription factor prediction tool with query gene sets or epigenomic profiles. <em>Bioinformatics</em>, <strong>34</strong>, 2867–2869 (2018). DOI: <a href='https://doi.org/10.1093/bioinformatics/bty194' target="_new">10.1093/bioinformatics/bty194</a></li>
 
           </ul>
-         
+
+          <!-- Add tutorial video link -->
+          <h3>Tutorial Video</h3>
+          <iframe width="720" height="405" src="https://www.youtube.com/embed/ChBELOHfWC4"></iframe>
+
+          <!-- Manual info -->
           <h3>Manual</h3>
           <p><img src="{{ url_for('static', filename='bartweb_guidelines_bart2.png') }}" alt='bartweb_guidelines' referrerPolicy='no-referrer' width="1000"/></p>
           <h5>Submit a job</h5>
           <p>The first three options (species, data type and input data) are required. </p>
           <p><strong>Species</strong>: Currently, only human (hg38) and mouse (mm10) genomes are supported. </p>
-          <p><strong>Input data type</strong>: A gene list has to be official gene symbols in text format. ChIP-seq data can be mapped reads in either BAM or BED format. The region input (under BETA testing) has to be a BED file with scored, non-overlapping intervals, for example, ChIP-seq peaks. The scores have to be on 5<sup>th</sup> row of the BED file. Please make sure that the ChIP-seq data or scored bed file are mapped to the correct genome version (hg38 or mm10).</p>
+          <p><strong>Input data type</strong>: 
+            <ul>
+            <li><strong>Gene list</strong>: A gene list has to be official gene symbols (HGNC for human or MGI for mouse) in text format. BARTweb can identify functional Transcription Regulators (TRs) that regulate the gene set. At least 100 genes are recommended in the input.
+            </ul>
+
+            <ul>
+            <li><strong>ChIP-seq data</strong>: ChIP-seq data can be mapped reads in either BAM or BED format. BARTweb can identify TRs have a binding profile correlated with a ChIP-seq profile. At least 1 million reads are recommended in the input.
+            </ul>
+
+            <ul>
+            <li><strong>Region (under BETA testing)</strong>: The region input has to be a BED file with scored, non-overlapping intervals, for example, ChIP-seq peaks. The scores have to be on 5<sup>th</sup> row of the BED file. Please make sure that the ChIP-seq data or scored bed file are mapped to the correct genome version (hg38 or mm10). BARTweb can identify TRs enriched in a genomic region set.
+            </ul>
+
+
           <p>If an email address is provided, BARTweb will send email notifications with the job key, job status, and the result URL.</p>
           <p>After clicking the “Submit” button, BARTweb will redirect to the result page.</p>
           <br>
@@ -54,29 +74,38 @@
           <h4>How to interpret the BART result</h4>
           <p><img src="{{ url_for('static', filename='bartweb2_result.png') }}" alt='bartweb_result' referrerPolicy='no-referrer' width="1000"/></p>
           <br>
-          <h5>Output 1: Transcription factor prediction table</h5>
-          <p>We take this sub-table of a <a href='http://bartweb.org/result?user_key=test_POU5F1_15751798580178106'>pre-run result</a> as an example to illustrate.</p>
+          <h5>Output 1: Transcriptional regulator (TR) prediction table</h5>
+          <p>We take this sub-table of a <a href="{{ url_for('sample_result', sample_type='genelist')}}">pre-run result</a> from a gene set that were downregulated upon OCT4 (POU5F1) knocked down in a human embryonic stem cell as an example to illustrate. Another <a href="{{ url_for('sample_result', sample_type='ChIPdata')}}">pre-run result</a> from a ChIP-seq profile upon AR being enhanced in a human prostatic carcinoma cell line LNCaP is also provided as a reference for ChIP-seq data input.</p>
           <ul>
-          <li><strong>TF</strong> (Column 1): Transcription factor name. When clicking a TF name, the analysis plots for this TF will be shown in a pop-up window.</li>
+          <li><strong>TR</strong> (Column 1): Transcriptional regulator name. When clicking a TR name, the analysis plots for this TR will be shown in a pop-up window.</li>
           </ul>
           <ul>
-          <li><strong>Wilcoxon test statistic &amp; P-value</strong> (Columns 2 &amp; 3): These two values indicate the level of association of each TF under the background of all other TFs. For each TF, we use Wilcoxon rank-sum test to compare the association scores from all ChIP-seq datasets for that factor with the association scores from all ChIP-seq datasets for other TFs.</li>
+          <li><strong>Wilcoxon test statistic &amp; P-value</strong> (Columns 2 &amp; 3): These two values indicate the level of association of each TR under the background of all other TRs. For each TR, we use Wilcoxon rank-sum test to compare the association scores from all ChIP-seq datasets for that regulator with the association scores from all ChIP-seq datasets for other TRs.</li>
           </ul>
           <ul>
-          <li><strong>Z-score</strong> (Column 4): This value is to assess the specificity of each TF compared with a background model. We build up background models using the Wilcoxon test statistics obtained from all annotated gene sets from the Molecular Signatures Database (MSigDB) for the Genelist mode or all H3K27ac ChIP-seq datasets from the data compendium for ChIP-seq data mode, respectively.</li>
+          <li><strong>Z-score</strong> (Column 4): This value is to assess the specificity of each TR compared with a background model. We build up background models using the Wilcoxon test statistics obtained from all annotated gene sets from the Molecular Signatures Database (MSigDB) for the Genelist mode or all H3K27ac ChIP-seq datasets from the data compendium for ChIP-seq data mode, respectively.</li>
           </ul>
           <ul>
-          <li><strong>Max AUC</strong> (Column 5): The maximum association score among multiple ChIP-seq datasets of that TF.</li>
+          <li><strong>Max AUC</strong> (Column 5): The maximum association score among multiple ChIP-seq datasets of that TR.</li>
           </ul>
           <ul>
-          <li><strong>Relative Rank</strong> (Column 6): The average rank of Wilcoxon test statistic, Z-score and maxAUC for each TF, divided by the total number of TFs.</li>
+          <li><strong>Relative Rank</strong> (Column 6): The average rank of Wilcoxon test statistic, Z-score and maxAUC for each TR, divided by the total number of TRs.</li>
           </ul>
           <ul>
-          <li><strong>Irwin-Hall P-value</strong> (Column 7): This P-value indicates the integrative rank significance, using the Irwin-Hall distribution as the null distribution for unrelated ranks. One can use 0.01 as a threshold for significant TF identification.</li>
+          <li><strong>Irwin-Hall P-value</strong> (Column 7): This P-value indicates the integrative rank significance, using the Irwin-Hall distribution as the null distribution for unrelated ranks. One can use 0.01 as a threshold for significant TR identification.</li>
           </ul>
           <br>
           <h5>Output 2: Data files and figure images</h5>
-          <p>Besides the transcription factor table, other output data files are also available for download, including the predicted genomic regulatory (enhancer) profile and analysis plots for each factor. The image files are in high resolution with publication quality.</p>
+          <p>Besides the transcriptional regulator table, other output data files are also available for download, including the predicted genomic regulatory (cis-regulatory element) profile and analysis plots for each regulator. The image files are in high resolution with publication quality.</p>
+          <ul>
+          <li><strong>*_adaptive_lasso_Info.txt</strong> provides regression information tells which representative H3K27ac samples are selected along with coefficients through adaptive lasso regression and sample annotations including cell line, cell type or tissue type. This is the output only generated in geneset mode.</li>
+          </ul>
+          <ul>
+          <li><strong>*_CRE_prediction_lasso.txt</strong> is the predicted cis-regulatory profile of the input gene set and is a ranked list of all CREs (UDHS) in the genome. The higher the score, the more likely the regulatory element regulates the input gene set. This is the output only generated in geneset mode.</li>
+          </ul>
+          <ul>
+          <li><strong>*_auc.txt</strong> provides the association score of each of the TR ChIP-seq dataset with the genome cis-regulatory profile.</li>
+          </ul>
                       
         </div>
 
