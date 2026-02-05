@@ -67,7 +67,7 @@ def init_project_path(user_key):
         with open(user_log_file_path, 'w'): pass
 
     logger.info("Init project: send user key to Amazon SQS...")
-    utils.send_sqs_message(user_key)  # TODO: uncomment for online testing
+    # utils.send_sqs_message(user_key)  # TODO: uncomment for online testing
 
     return user_path
 
@@ -116,38 +116,73 @@ def prepare_bart(user_data):
 
     if user_data['dataType'] == 'HiC':
         bart_input = []
-        bart_input.append(os.path.join(user_data['user_path'], 'upload/' + user_data['control_index_file']))
-        bart_input.append(os.path.join(user_data['user_path'], 'upload/' + user_data['control_matrix_file']))
-        bart_input.append(os.path.join(user_data['user_path'], 'upload/' + user_data['treatment_index_file']))
-        bart_input.append(os.path.join(user_data['user_path'], 'upload/' + user_data['treatment_matrix_input']))
+        #bart_input.append(os.path.join(user_data['user_path'], 'upload/' + user_data['control_index_file']))
+        #bart_input.append(os.path.join(user_data['user_path'], 'upload/' + user_data['control_matrix_file']))
+        #bart_input.append(os.path.join(user_data['user_path'], 'upload/' + user_data['treatment_index_file']))
+        #bart_input.append(os.path.join(user_data['user_path'], 'upload/' + user_data['treatment_matrix_input']))
+        bart_input = os.path.join('upload/' + user_data['control_index_file'])
+        bart_input = os.path.join('upload/' + user_data['control_matrix_file'])
+        bart_input = os.path.join('upload/' + user_data['treatment_index_file'])
+        bart_input = os.path.join('upload/' + user_data['treatment_matrix_input'])
     # elif user_data['dataType'] == 'regions':
     #     #place holder, awaiting Zhenjia
     #     bart_input = 'placeholder'
     else:
-        bart_input = os.path.join(user_data['user_path'], 'upload/' + user_data['files'])
-        
+        # bart_input = os.path.join(user_data['user_path'], 'upload/' + user_data['files'])
+        bart_input = os.path.join('upload/' + user_data['files'])
+    
+    # Made changes for bart_backend
     bart_species = user_data['assembly']
-    bart_output_dir = os.path.join(user_data['user_path'], 'download/')
+    user_path = user_data['user_path']
+    # bart_output_dir = os.path.join(user_path, 'download')
+    bart_output_dir = 'download'
+    # log_file = os.path.join(user_path, 'log', 'mb_pipe.log')
+    log_file = 'log/mb_pipe.log'
+
+    # Build the correct bart2 command
+    bart_cmd = None
     if user_data['dataType'] == 'Geneset':
-        excutable = 'python3 bin/bart2 geneset -i '+bart_input+' -s '+bart_species+' --outdir '+bart_output_dir+' > {} 2>&1 '.format(os.path.join(user_data['user_path'],'log/mb_pipe.log'))+'\n'
-    if user_data['dataType'] == 'ChIP-seq':
-        ext = user_data['files'].split('.')[-1]
+        bart_cmd = f"bart2 geneset -i {bart_input} -s {bart_species} --outdir {bart_output_dir} --binsize 1000"
+    elif user_data['dataType'] == 'ChIP-seq':
+        ext = user_data['files'].split('.')[-1].lower()
         if ext == 'bam':
-            excutable = 'python3 bin/bart2 profile -f bam -i '+bart_input+' -s '+bart_species+' --outdir '+bart_output_dir+' > {} 2>&1 '.format(os.path.join(user_data['user_path'],'log/mb_pipe.log')) +'\n'
-        elif ext == 'bed':
-            excutable = 'python3 bin/bart2 profile -f bed -i '+bart_input+' -s '+bart_species+' --outdir '+bart_output_dir+' > {} 2>&1 '.format(os.path.join(user_data['user_path'],'log/mb_pipe.log')) +'\n'
+            bart_cmd = f"bart2 profile -f bam -i {bart_input} -s {bart_species} --outdir {bart_output_dir}"
+        elif ext.startswith('bed'):
+            bart_cmd = f"bart2 profile -f bed -i {bart_input} -s {bart_species} --outdir {bart_output_dir}"
         else:
             logger.error("illegal file extension")
-    if user_data['dataType'] == 'regions':
-        excutable = 'python3 bin/bart2 region -i '+bart_input+' -s '+bart_species+' --outdir '+bart_output_dir+' > {} 2>&1 '.format(os.path.join(user_data['user_path'],'log/mb_pipe.log'))+'\n'
-    if user_data['dataType'] == 'HiC':
-        excutable = 'python3 bin/bart2 diffHiC -ci '+bart_input[0]+' -cm '+bart_input[1]+' -ti '+bart_input[2]+' -tm '+bart_input[3]+' -s '+bart_species+' --outdir '+bart_output_dir+' > {} 2>&1 '.format(os.path.join(user_data['user_path'],'log/mb_pipe.log'))+'\n'
-    excute_send_email = 'python3 send_finish_email.py {}\n'.format(user_data['user_path'])
-    excutable_file = os.path.join(user_data['user_path'], 'run_bart.sh')
+            bart_cmd = None
+    elif user_data['dataType'] == 'regions':
+        bart_cmd = f"bart2 region -i {bart_input} -s {bart_species} --outdir {bart_output_dir}"
+    elif user_data['dataType'] == 'HiC':
+        bart_cmd = (
+            f"bart2 diffHiC -ci {bart_input[0]} -cm {bart_input[1]} "
+            f"-ti {bart_input[2]} -tm {bart_input[3]} -s {bart_species} --outdir {bart_output_dir}"
+        )
+
+    if not bart_cmd:
+        raise ValueError("Could not build BART command")
+
+    # Load the slurm template and substitute values
+    with open(os.path.join(PROJECT_DIR, "run_template.sh")) as f:
+        template = f.read()
+
+    filled = (
+        template.replace("{{N}}", str(user_data.get("slurm_n", 1)))
+                .replace("{{MEM}}", str(user_data.get("slurm_mem", 200000)))
+                .replace("{{TIME}}", user_data.get("slurm_time", "4:00:00"))
+                .replace("{{PARTITION}}", user_data.get("slurm_partition", "standard"))
+                .replace("{{ACCOUNT}}", user_data.get("slurm_account", "zanglab"))
+                .replace("{{CONDA_ENV}}", user_data.get("conda_env", "/standard/vol190/zanglab/wm9tr/bart_env"))
+                .replace("{{BART_CMD}}", bart_cmd)
+                .replace("{{LOG_FILE}}", str(log_file))
+                .replace("{{USER_PATH}}", str(user_path))
+    )
+
+    # Write run_bart.sh (scheduler will later pick this up)
+    excutable_file = os.path.join(user_path, 'run_bart.sh')
     with open(excutable_file, 'w') as fopen:
-        fopen.write(excutable)
-        fopen.write(excute_send_email)
-    fopen.close()
+        fopen.write(filled)
 
 
     '''
@@ -317,7 +352,7 @@ def is_bart_done(user_data):
         if count >= 3:
             done = True
     ## ---
-    if user_data['dataType'] == 'ChIP-seq' or user_data['dataType'] == 'regions' or user_data['dataType'] == 'HiC':
+    if user_data['dataType'] == 'ChIP-seq' or user_data['dataType'] == 'regions':
         for file in files:
             if utils.is_file_zero(os.path.join(bart_output_dir, file)):
                 continue
@@ -328,6 +363,28 @@ def is_bart_done(user_data):
                 count = count+1
         if count==2:
             done = True
+
+    # @marvinquiet: for HiC input 
+    if user_data['dataType'] == 'HiC':
+        for file in files:
+            if utils.is_file_zero(os.path.join(bart_output_dir, file)):
+                continue
+
+            if '_differential_score.bed' in file:
+                count += 1
+            if '_differential_score.bed.sorted.bw' in file:
+                count += 1
+            if '_Interaction_Decreased_auc.txt' in file:
+                count += 1
+            if '_Interaction_Decreased_bart_results.txt' in file:
+                count += 1
+            if '_Interaction_Increased_auc.txt' in file:
+                count += 1
+            if '_Interaction_Increased_bart_results.txt' in file:
+                count += 1
+        if count == 6:
+            done = True
+
     return done
 
 
@@ -470,3 +527,1005 @@ def site_stats():
 
 if __name__ == '__main__':
     parse_bart_results('/Users/marvin/Projects/flask_playground/usercase/a_1534972940.637962/download/genelist1_bart_results.txt')
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

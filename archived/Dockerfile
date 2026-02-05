@@ -1,5 +1,6 @@
-ARG BASE_TAG
-FROM ${BASE_TAG}
+# FROM Dockerfile_debian_20240506_fixed  # not sure if this would be the correct name for it
+# MAINTAINER Wenjing Ma mawenjing1993@gmail.com
+
 # ADD . /app
 COPY ./requirements.txt /BARTweb/requirements.txt
 # RUN pip install uwsgi
