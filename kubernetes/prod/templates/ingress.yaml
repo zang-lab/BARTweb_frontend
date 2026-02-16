@@ -1,0 +1,28 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: bartweb-ingress
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    nginx.ingress.kubernetes.io/rewrite-target: /
+    nginx.org/websocket-services: "bartweb"
+    nginx.org/proxy-connect-timeout: "600s"
+    nginx.org/proxy-read-timeout: "600s"
+    nginx.org/proxy-send-timeout: "600s"
+spec:
+  rules:
+    - host: bartweb.pods.uvarc.io
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: bartweb
+                port:
+                  number: 80
+
+  tls:
+    - hosts:
+        - bartweb.pods.uvarc.io
+      secretName: bartweb-nginx-tls-ingress-secret

@@ -21,12 +21,12 @@ RUN apt-get update && apt-get install -y \
 RUN pip3 install --no-cache-dir --break-system-packages uwsgi
 
 # App deps
-COPY ./requirements.txt /BARTweb/requirements.txt
+COPY ../requirements.txt /BARTweb/requirements.txt
 RUN pip3 install --break-system-packages -r /BARTweb/requirements.txt
 
 # App code
 RUN mkdir -p /BARTweb
-COPY . /BARTweb/
+COPY .. /BARTweb/
 
 # Prepare a writable usercase root (same fix that solved the 500)
 RUN mkdir -p /BARTweb/usercase \
