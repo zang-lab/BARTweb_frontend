@@ -87,7 +87,7 @@ jobs:
           push: true
           tags: ${{ env.GHCR_REPO }}:${{ env.TAG_NAME }}
 
-      # Commit Helm values for prod tags
+      # Commit Helm values for prod tags using a PAT
       - name: Commit Helm tag update
         if: startsWith(github.ref, 'refs/tags/prod-')
         uses: stefanzweifel/git-auto-commit-action@v5
@@ -97,3 +97,4 @@ jobs:
           file_pattern: kubernetes/prod/values.yaml
           commit_user_name: GitHub Actions Bot
           commit_user_email: github@virginia.edu
+          token: ${{ secrets.GH_WRITE_TOKEN }}
