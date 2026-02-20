@@ -22,18 +22,23 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      # Checkout code
       - name: Checkout
         uses: actions/checkout@v4
 
+      # Set up QEMU for multi-platform builds
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
 
+      # Set up Docker Buildx
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
-      - name: Set GHCR image path
+      # Set GHCR image path
+      - name: Set GHCR_REPO
         run: echo "GHCR_REPO=${REGISTRY}/${IMAGE_NAME,,}" >> $GITHUB_ENV
 
+      # Extract prod tag from git tag
       - name: Extract prod tag
         if: startsWith(github.ref, 'refs/tags/prod-')
         run: |
@@ -41,6 +46,7 @@ jobs:
           echo "TAG_NAME=$TAG_NAME" >> $GITHUB_ENV
           yq eval ".image.tag = \"${TAG_NAME}\"" -i kubernetes/prod/values.yaml
 
+      # Login to GHCR using PAT
       - name: Login to GHCR
         uses: docker/login-action@v3
         with:
@@ -48,36 +54,36 @@ jobs:
           username: ${{ secrets.GHCR_USERNAME_RKM4BC }}
           password: ${{ secrets.GHCR_PAT_RKM4BC }}
 
-      # Develop / feature branches
+      # Build & push for develop/feature branches
       - name: Build & Push (develop/feature)
         if: github.ref != 'refs/heads/master' && !startsWith(github.ref, 'refs/tags/prod-')
         uses: docker/build-push-action@v6
         with:
           context: .
           file: ./docker/Dockerfile
-          platforms: linux/amd64
+          platforms: linux/amd64,linux/arm64
           push: true
           tags: ${{ env.GHCR_REPO }}:${{ github.ref_name }}
 
-      # Master branch → now tagged as prod
+      # Master branch → prod tag
       - name: Build & Push (master → prod)
         if: github.ref == 'refs/heads/master'
         uses: docker/build-push-action@v6
         with:
           context: .
           file: ./docker/Dockerfile
-          platforms: linux/amd64
+          platforms: linux/amd64,linux/arm64
           push: true
           tags: ${{ env.GHCR_REPO }}:prod
 
-      # Prod tags (from git tags)
+      # Git tags → push tagged prod images
       - name: Build & Push (prod tag)
         if: startsWith(github.ref, 'refs/tags/prod-')
         uses: docker/build-push-action@v6
         with:
           context: .
           file: ./docker/Dockerfile
-          platforms: linux/amd64
+          platforms: linux/amd64,linux/arm64
           push: true
           tags: ${{ env.GHCR_REPO }}:${{ env.TAG_NAME }}
 
