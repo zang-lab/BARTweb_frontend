@@ -4,7 +4,7 @@ image:
   pullPolicy: Always
   tag: latest
 imagePullSecrets:
-  - name: "ghcr-regcred"
+  - name: "ghcr-regcred-bartweb"
 nameOverride: ""
 fullnameOverride: ""
 podAnnotations: {}
