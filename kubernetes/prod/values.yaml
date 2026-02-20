@@ -3,7 +3,7 @@ replicaCount: 1
 image:
   repository: ghcr.io/zang-lab/bartweb
   pullPolicy: Always
-  tag: latest
+  tag: prod-0.0.4
 
 imagePullSecrets:
   - name: "ghcr-regcred-bartweb"
