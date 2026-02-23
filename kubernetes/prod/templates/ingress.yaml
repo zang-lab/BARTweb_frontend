@@ -1,29 +1,32 @@
-#apiVersion: networking.k8s.io/v1
-#kind: Ingress
-#metadata:
-#  name: bartweb-ingress
-#  namespace: zanglab
-#  annotations:
-#    kubernetes.io/ingress.class: nginx
-#    nginx.ingress.kubernetes.io/rewrite-target: /
-#    nginx.ingress.kubernetes.io/proxy-connect-timeout: "600"
-#    nginx.ingress.kubernetes.io/proxy-read-timeout: "600"
-#    nginx.ingress.kubernetes.io/proxy-send-timeout: "600"
-#
-#spec:
-#  tls:
-#    - hosts:
-#        - bartweb.pods.uvarc.io
-#      secretName: bartweb-nginx-tls-ingress-secret
-#
-#  rules:
-#    - host: bartweb.pods.uvarc.io
-#      http:
-#        paths:
-#          - path: /
-#            pathType: Prefix
-#            backend:
-#              service:
-#                name: bartweb
-#                port:
-#                  number: 5000
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: bartweb-ingress
+  namespace: zanglab
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    nginx.ingress.kubernetes.io/rewrite-target: /
+    nginx.org/websocket-services: "bartweb"
+    nginx.org/proxy-connect-timeout: "600s"
+    nginx.org/proxy-read-timeout: "600s"
+    nginx.org/proxy-send-timeout: "600s"
+    cert-manager.io/cluster-issuer: letsencrypt-cluster-issuer
+    acme.cert-manager.io/http01-edit-in-place: "true"
+
+spec:
+  rules:
+    - host: bartweb.pods.uvarc.io
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: bartweb
+                port:
+                  number: 5000
+
+  tls:
+    - hosts:
+        - bartweb.pods.uvarc.io
+      secretName: bartweb-nginx-tls-ingress-secret

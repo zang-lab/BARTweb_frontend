@@ -6,27 +6,12 @@ image:
   tag: prod-0.0.4
 
 imagePullSecrets:
-  - name: "ghcr-regcred-bartweb"
-
-nameOverride: ""
-fullnameOverride: ""
-
-podAnnotations: {}
-podLabels: {}
-podSecurityContext: {}
-# fsGroup: 2000
-
-securityContext: {}
-# capabilities:
-#   drop:
-#   - ALL
-# readOnlyRootFilesystem: true
-# runAsNonRoot: true
-# runAsUser: 1000
+  - name: ghcr-regcred-bartweb
 
 service:
   type: ClusterIP
   port: 80
+  targetPort: 5000
 
 resources:
   limits:
@@ -35,7 +20,3 @@ resources:
   requests:
     cpu: 0.5
     memory: 1Gi
-
-nodeSelector: {}
-tolerations: []
-affinity: {}
