@@ -24,7 +24,7 @@ spec:
               service:
                 name: bartweb
                 port:
-                  number: 5000
+                  number: 80
 
   tls:
     - hosts:
