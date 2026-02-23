@@ -41,25 +41,11 @@ spec:
 
           ports:
             - name: http
-              containerPort: {{ .Values.service.port }}
+              containerPort: {{ .Values.service.targetPort | default 5000 }}
               protocol: TCP
 
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
-#
-#          volumeMounts:
-#            - name: bartweb-slib2-pvc
-#              mountPath: /slib2
-#            - name: bartweb-weblog-pvc
-#              mountPath: /var/log/nginx/web
-#
-#      volumes:
-#        - name: bartweb-slib2-pvc
-#          persistentVolumeClaim:
-#            claimName: bartweb-slib2-pvc
-#        - name: bartweb-weblog-pvc
-#          persistentVolumeClaim:
-#            claimName: bartweb-weblog-pvc
 
       {{- with .Values.nodeSelector }}
       nodeSelector:
