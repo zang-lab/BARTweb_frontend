@@ -1,0 +1,30 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: trigger-bartweb
+  namespace: {{ .Release.Namespace }}
+spec:
+  schedule: "0 * * * *"  # runs every hour, adjust as needed
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          restartPolicy: OnFailure
+          containers:
+            - name: trigger
+              image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+              command: ["python3", "/BARTweb/trigger.py"]
+              volumeMounts:
+                - name: usercase-volume
+                  mountPath: /BARTweb/usercase
+          volumes:
+            {{- if .Values.usercase.usePVC }}
+            - name: usercase-volume
+              persistentVolumeClaim:
+                claimName: {{ .Values.usercase.pvcName }}
+            {{- else }}
+            - name: usercase-volume
+              hostPath:
+                path: {{ .Values.usercase.hostPath }}
+                type: DirectoryOrCreate
+            {{- end }}

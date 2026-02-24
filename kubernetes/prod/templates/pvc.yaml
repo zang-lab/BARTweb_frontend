@@ -1,0 +1,13 @@
+{{- if .Values.usercase.usePVC }}
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ .Values.usercase.pvcName }}
+  namespace: {{ .Release.Namespace }}
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: {{ .Values.usercase.storageSize }}
+  {{- end }}

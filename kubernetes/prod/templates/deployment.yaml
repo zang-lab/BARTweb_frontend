@@ -9,55 +9,41 @@ spec:
   selector:
     matchLabels:
       {{- include "bartweb.selectorLabels" . | nindent 6 }}
-
   template:
     metadata:
-      annotations:
-        {{- with .Values.podAnnotations }}
-          {{- toYaml . | nindent 8 }}
-          {{- end }}
       labels:
         {{- include "bartweb.labels" . | nindent 8 }}
-          {{- with .Values.podLabels }}
-          {{- toYaml . | nindent 8 }}
-          {{- end }}
-
     spec:
-      {{- with .Values.imagePullSecrets }}
+      {{- if .Values.imagePullSecrets }}
       imagePullSecrets:
-        {{- toYaml . | nindent 8 }}
+        {{- toYaml .Values.imagePullSecrets | nindent 8 }}
       {{- end }}
-
-      securityContext:
-        {{- toYaml .Values.podSecurityContext | nindent 8 }}
-
       containers:
         - name: {{ .Chart.Name }}
-          securityContext:
-            {{- toYaml .Values.securityContext | nindent 12 }}
-
-          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
-
           ports:
             - name: http
-              containerPort: {{ .Values.service.targetPort | default 5000 }}
-              protocol: TCP
-
+              containerPort: {{ .Values.service.targetPort }}
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
-
-      {{- with .Values.nodeSelector }}
+          volumeMounts:
+            - name: usercase-volume
+              mountPath: /BARTweb/usercase
+      volumes:
+        {{- if .Values.usercase.usePVC }}
+        - name: usercase-volume
+          persistentVolumeClaim:
+            claimName: {{ .Values.usercase.pvcName }}
+        {{- else }}
+        - name: usercase-volume
+          hostPath:
+            path: {{ .Values.usercase.hostPath }}
+            type: DirectoryOrCreate
+        {{- end }}
       nodeSelector:
-        {{- toYaml . | nindent 8 }}
-      {{- end }}
-
-      {{- with .Values.affinity }}
-      affinity:
-        {{- toYaml . | nindent 8 }}
-      {{- end }}
-
-      {{- with .Values.tolerations }}
+        {{- toYaml .Values.nodeSelector | nindent 8 }}
       tolerations:
-        {{- toYaml . | nindent 8 }}
-      {{- end }}
+        {{- toYaml .Values.tolerations | nindent 8 }}
+      affinity:
+        {{- toYaml .Values.affinity | nindent 8 }}
