@@ -1,13 +1,12 @@
-{{- if .Values.usercase.usePVC }}
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: {{ .Values.usercase.pvcName }}
-  namespace: {{ .Release.Namespace }}
+  name: bartweb-usercase-pvc
+  namespace: zanglab
 spec:
   accessModes:
     - ReadWriteMany
   resources:
     requests:
-      storage: {{ .Values.usercase.storageSize }}
-  {{- end }}
+      storage: 10Gi
+  storageClassName: csi-cephfs-sc
