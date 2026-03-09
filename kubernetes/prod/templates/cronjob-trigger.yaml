@@ -15,15 +15,12 @@ spec:
               image: ghcr.io/uvarc/uvarc-unified-service-base:develop
               imagePullPolicy: Always
               command: ["python3", "/BARTweb/trigger.py"]
-
               volumeMounts:
-                - name: usercase-volume
-                  mountPath: "/BARTweb/usercase"
-
+                - name: ssh-key-volume
+                  mountPath: "/etc/ssh-key"
               env:
                 - name: USERID
                   value: "cz3d"
-
               resources:
                 limits:
                   cpu: "0.5"
@@ -31,11 +28,10 @@ spec:
                 requests:
                   cpu: "0.5"
                   memory: 512Mi
-
           volumes:
-            - name: usercase-volume
-              persistentVolumeClaim:
-                claimName: bartweb-usercase-pvc
-
+            - name: ssh-key-volume
+              secret:
+                secretName: cz3d-ssh-key
+                defaultMode: 256
           restartPolicy: OnFailure
       ttlSecondsAfterFinished: 86400
