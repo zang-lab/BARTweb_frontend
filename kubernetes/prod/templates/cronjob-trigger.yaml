@@ -4,7 +4,7 @@ metadata:
   name: bartweb-trigger-cronjob
   namespace: zanglab
 spec:
-  schedule: "0 * * * *"   # every hour
+  schedule: "0 * * * *"  # every hour
   jobTemplate:
     spec:
       template:
@@ -15,10 +15,10 @@ spec:
               imagePullPolicy: Always
               command: ["python3", "/BARTweb/trigger.py"]
               volumeMounts:
-                # Mount SSH key secret
+                # SSH key secret for HPC
                 - name: ssh-key-volume
                   mountPath: /etc/ssh-key
-                # Mount PVC for trigger.py and usercase
+                # PVC for trigger.py and usercase directory
                 - name: usercase-pvc
                   mountPath: /BARTweb
               env:
@@ -38,6 +38,6 @@ spec:
                 defaultMode: 256
             - name: usercase-pvc
               persistentVolumeClaim:
-                claimName: bartweb-usercase-pvc  # your existing PVC
+                claimName: bartweb-usercase-pvc  # the PVC that should contain trigger.py
           restartPolicy: OnFailure
       ttlSecondsAfterFinished: 86400
