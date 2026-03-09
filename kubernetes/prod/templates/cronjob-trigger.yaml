@@ -18,9 +18,9 @@ spec:
                 # SSH key secret for HPC
                 - name: ssh-key-volume
                   mountPath: /etc/ssh-key
-                # PVC for trigger.py and usercase directory
-                - name: usercase-pvc
-                  mountPath: /BARTweb
+#                # PVC for trigger.py and usercase directory
+#                - name: usercase-pvc
+#                  mountPath: /BARTweb
               env:
                 - name: USERID
                   value: "cz3d"
@@ -36,8 +36,8 @@ spec:
               secret:
                 secretName: cz3d-ssh-key
                 defaultMode: 256
-            - name: usercase-pvc
-              persistentVolumeClaim:
-                claimName: bartweb-usercase-pvc  # the PVC that should contain trigger.py
+#            - name: usercase-pvc
+#              persistentVolumeClaim:
+#                claimName: bartweb-usercase-pvc  # the PVC that should contain trigger.py
           restartPolicy: OnFailure
       ttlSecondsAfterFinished: 86400
