@@ -21,6 +21,13 @@ spec:
                 # Mount hostPath for trigger.py and usercase directory
                 - name: host-usercase
                   mountPath: /BARTweb
+              resources:
+                requests:
+                  cpu: "0.5"
+                  memory: "512Mi"
+                limits:
+                  cpu: "1"
+                  memory: "1Gi"
           volumes:
             # Secret for HPC access
             - name: ssh-key-volume
