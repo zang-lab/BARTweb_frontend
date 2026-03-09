@@ -13,7 +13,7 @@ spec:
             - name: bartweb-trigger-container
               image: ghcr.io/uvarc/uvarc-unified-service-base:develop
               imagePullPolicy: Always
-              command: ["python3", "/BARTweb/trigger.py"]
+              command: ["python3", "/standard/vol190/zanglab/trigger.py"]
               volumeMounts:
                 # SSH key secret for HPC
                 - name: ssh-key-volume
