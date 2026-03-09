@@ -1,11 +1,10 @@
 apiVersion: batch/v1
 kind: CronJob
 metadata:
-  name: {{ include "bartweb.fullname" . }}-trigger-cronjob
-  labels:
-    {{- include "bartweb.labels" . | nindent 4 }}
+  name: bartweb-trigger-cronjob
+  namespace: zanglab
 spec:
-  schedule: "0 * * * *"
+  schedule: "0 * * * *"   # run every hour
   jobTemplate:
     spec:
       template:
@@ -16,22 +15,22 @@ spec:
               imagePullPolicy: Always
               command: ["python3", "/BARTweb/trigger.py"]
               volumeMounts:
+                # Mount SSH key secret
                 - name: ssh-key-volume
-                  mountPath: "/etc/ssh-key"
-              env:
-                - name: USERID
-                  value: "cz3d"
-              resources:
-                limits:
-                  cpu: "0.5"
-                  memory: 512Mi
-                requests:
-                  cpu: "0.5"
-                  memory: 512Mi
+                  mountPath: /etc/ssh-key
+                # Mount hostPath for trigger.py and usercase directory
+                - name: host-usercase
+                  mountPath: /BARTweb
           volumes:
+            # Secret for HPC access
             - name: ssh-key-volume
               secret:
                 secretName: cz3d-ssh-key
                 defaultMode: 256
+            # HostPath to access trigger.py and usercase
+            - name: host-usercase
+              hostPath:
+                path: /standard/vol190/zanglab
+                type: Directory
           restartPolicy: OnFailure
       ttlSecondsAfterFinished: 86400
