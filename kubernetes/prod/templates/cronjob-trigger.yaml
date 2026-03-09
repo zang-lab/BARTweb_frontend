@@ -4,7 +4,7 @@ metadata:
   name: bartweb-trigger-cronjob
   namespace: zanglab
 spec:
-  schedule: "0 * * * *"   # run every hour
+  schedule: "0 * * * *"   # every hour
   jobTemplate:
     spec:
       template:
@@ -18,26 +18,26 @@ spec:
                 # Mount SSH key secret
                 - name: ssh-key-volume
                   mountPath: /etc/ssh-key
-                # Mount hostPath for trigger.py and usercase directory
-                - name: host-usercase
+                # Mount PVC for trigger.py and usercase
+                - name: usercase-pvc
                   mountPath: /BARTweb
+              env:
+                - name: USERID
+                  value: "cz3d"
               resources:
+                limits:
+                  cpu: "0.5"
+                  memory: 512Mi
                 requests:
                   cpu: "0.5"
-                  memory: "512Mi"
-                limits:
-                  cpu: "1"
-                  memory: "1Gi"
+                  memory: 512Mi
           volumes:
-            # Secret for HPC access
             - name: ssh-key-volume
               secret:
                 secretName: cz3d-ssh-key
                 defaultMode: 256
-            # HostPath to access trigger.py and usercase
-            - name: host-usercase
-              hostPath:
-                path: /standard/vol190/zanglab
-                type: Directory
+            - name: usercase-pvc
+              persistentVolumeClaim:
+                claimName: bartweb-usercase-pvc  # your existing PVC
           restartPolicy: OnFailure
       ttlSecondsAfterFinished: 86400
