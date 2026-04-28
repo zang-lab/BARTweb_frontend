@@ -1,5 +1,3 @@
-# cronjob.yaml
-
 apiVersion: batch/v1
 kind: CronJob
 metadata:
@@ -23,8 +21,9 @@ spec:
               image: ghcr.io/uvarc/uvarc-unified-service-base:develop
 
               command:
-                - python3
-                - /BARTweb/usercase/trigger.py
+                - sh
+                - -c
+                - pip install pyyaml && python3 /BARTweb/usercase/trigger.py
 
               env:
                 - name: USERID
