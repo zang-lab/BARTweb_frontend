@@ -16,3 +16,4 @@ build/
 testdata/
 log/
 usercase/.idea/
+.idea/

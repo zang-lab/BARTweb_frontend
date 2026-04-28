@@ -4,26 +4,27 @@ metadata:
   name: bartweb-trigger-cronjob
   namespace: zanglab
 spec:
-  schedule: "0 * * * *"  # every hour
+  schedule: "0 * * * *"   # every hour
+
   jobTemplate:
     spec:
       template:
         spec:
+          restartPolicy: OnFailure
+
           containers:
             - name: bartweb-trigger-container
               image: ghcr.io/uvarc/uvarc-unified-service-base:develop
               imagePullPolicy: Always
-              command: ["python3", "/standard/vol190/zanglab/trigger.py"]
-              volumeMounts:
-                # SSH key secret for HPC
-                - name: ssh-key-volume
-                  mountPath: /etc/ssh-key
-#                # PVC for trigger.py and usercase directory
-#                - name: usercase-pvc
-#                  mountPath: /BARTweb
+
+              command:
+                - python3
+                - /BARTweb/usercase/trigger.py
+
               env:
                 - name: USERID
                   value: "cz3d"
+
               resources:
                 limits:
                   cpu: "0.5"
@@ -31,13 +32,23 @@ spec:
                 requests:
                   cpu: "0.5"
                   memory: 512Mi
+
+              volumeMounts:
+                - name: usercase-volume
+                  mountPath: /BARTweb/usercase
+
+                - name: ssh-key-volume
+                  mountPath: /etc/ssh-key
+                  readOnly: true
+
           volumes:
+            - name: usercase-volume
+              persistentVolumeClaim:
+                claimName: bartweb-usercase-pvc
+
             - name: ssh-key-volume
               secret:
                 secretName: cz3d-ssh-key
-                defaultMode: 256
-#            - name: usercase-pvc
-#              persistentVolumeClaim:
-#                claimName: bartweb-usercase-pvc  # the PVC that should contain trigger.py
-          restartPolicy: OnFailure
-      ttlSecondsAfterFinished: 86400
+                defaultMode: 0400
+
+          nodeSelector: {}
