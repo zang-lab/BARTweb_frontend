@@ -1,3 +1,5 @@
+# cronjob.yaml
+
 apiVersion: batch/v1
 kind: CronJob
 metadata:
@@ -37,19 +39,17 @@ spec:
                   memory: "1Gi"
 
               volumeMounts:
-                - name: trigger-file
-                  mountPath: /BARTweb/usercase/trigger.py
-                  subPath: trigger.py
+                - name: usercase-volume
+                  mountPath: /BARTweb/usercase
 
                 - name: ssh-key-volume
                   mountPath: /etc/ssh-key
                   readOnly: true
 
           volumes:
-            - name: trigger-file
-              hostPath:
-                path: /standard/vol190/zanglab/trigger.py
-                type: File
+            - name: usercase-volume
+              persistentVolumeClaim:
+                claimName: bartweb-usercase-pvc
 
             - name: ssh-key-volume
               secret:
