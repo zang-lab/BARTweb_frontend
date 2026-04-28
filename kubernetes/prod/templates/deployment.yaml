@@ -1,14 +1,14 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "bartweb.fullname" . }}-app
+  name: bartweb-app
   namespace: zanglab
   labels:
     app.kubernetes.io/instance: bartweb
     app.kubernetes.io/name: bartweb
 
 spec:
-  replicas: {{ .Values.replicaCount }}
+  replicas: 1
 
   selector:
     matchLabels:
@@ -33,14 +33,19 @@ spec:
 
       containers:
         - name: bartweb
-          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
-          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          image: ghcr.io/zang-lab/bartweb_frontend:prod-0.0.5
+          imagePullPolicy: Always
 
           ports:
-            - containerPort: {{ .Values.service.targetPort }}
+            - containerPort: 5000
 
           resources:
-            {{- toYaml .Values.resources | nindent 12 }}
+            limits:
+              cpu: "1"
+              memory: "2Gi"
+            requests:
+              cpu: "500m"
+              memory: "1Gi"
 
           volumeMounts:
             - name: usercase-volume
@@ -53,7 +58,7 @@ spec:
       volumes:
         - name: usercase-volume
           persistentVolumeClaim:
-            claimName: {{ .Values.usercase.pvcName }}
+            claimName: bartweb-usercase-pvc
 
         - name: ssh-key-volume
           secret:
