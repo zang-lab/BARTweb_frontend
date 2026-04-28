@@ -15,4 +15,4 @@ build/
 
 testdata/
 log/
-usercase/
+usercase/.idea/
