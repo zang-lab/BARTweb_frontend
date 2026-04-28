@@ -3,25 +3,33 @@ kind: Deployment
 metadata:
   name: {{ include "bartweb.fullname" . }}-app
   namespace: zanglab
+  labels:
+    app.kubernetes.io/instance: bartweb
+    app.kubernetes.io/name: bartweb
 
 spec:
   replicas: {{ .Values.replicaCount }}
 
   selector:
     matchLabels:
-      app: bartweb-app
+      app.kubernetes.io/instance: bartweb
+      app.kubernetes.io/name: bartweb
 
   template:
     metadata:
       labels:
-        app: bartweb-app
+        app.kubernetes.io/instance: bartweb
+        app.kubernetes.io/name: bartweb
 
     spec:
       securityContext:
         runAsUser: 1000
         runAsGroup: 1000
         fsGroup: 1000
-        fsGroupChangePolicy: "OnRootMismatch"
+        fsGroupChangePolicy: OnRootMismatch
+
+      imagePullSecrets:
+        - name: ghcr-regcred-bartweb
 
       containers:
         - name: bartweb

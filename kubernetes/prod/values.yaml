@@ -22,8 +22,14 @@ resources:
     memory: "1Gi"
 
 usercase:
+  usePVC: true
   pvcName: bartweb-usercase-pvc
   storageSize: 10Gi
+  hostPath: /standard/vol190/zanglab/usercase
+
+sshKey:
+  secretName: cz3d-ssh-key
+  mountPath: /etc/ssh-key
 
 nodeSelector: {}
 tolerations: []
