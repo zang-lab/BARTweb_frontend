@@ -18,8 +18,11 @@ spec:
               image: ghcr.io/uvarc/uvarc-unified-service-base:develop
 
               command:
-                - python3
-                - /BARTweb/usercase/trigger.py
+                - /bin/sh
+                - -c
+                - |
+                  mkdir -p /BARTweb/usercase/log && \
+                  python3 /BARTweb/usercase/trigger.py
 
               env:
                 - name: USERID
