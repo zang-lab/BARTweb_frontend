@@ -6,6 +6,9 @@ metadata:
 
 spec:
   schedule: "0 * * * *"
+  concurrencyPolicy: Allow
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 3
 
   jobTemplate:
     spec:
@@ -18,15 +21,20 @@ spec:
               image: ghcr.io/uvarc/uvarc-unified-service-base:develop
 
               command:
-                - /bin/sh
-                - -c
-                - |
-                  mkdir -p /BARTweb/usercase/log && \
-                  python3 /BARTweb/usercase/trigger.py
+                - python3
+                - /BARTweb/usercase/trigger.py
 
               env:
                 - name: USERID
                   value: "cz3d"
+
+              resources:
+                requests:
+                  cpu: "500m"
+                  memory: "512Mi"
+                limits:
+                  cpu: "1"
+                  memory: "1Gi"
 
               volumeMounts:
                 - name: usercase-volume
@@ -45,3 +53,7 @@ spec:
               secret:
                 secretName: cz3d-ssh-key
                 defaultMode: 0400
+
+          nodeSelector: {}
+          tolerations: []
+          affinity: {}
