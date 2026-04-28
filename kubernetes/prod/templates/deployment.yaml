@@ -1,93 +1,60 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "bartweb.fullname" . }}-app
+  name: bartweb-app
+  namespace: zanglab
   labels:
-    {{- include "bartweb.labels" . | nindent 4 }}
+    app: bartweb-app
 
 spec:
-  replicas: {{ .Values.replicaCount }}
+  replicas: 1
 
   selector:
     matchLabels:
-      {{- include "bartweb.selectorLabels" . | nindent 6 }}
+      app: bartweb-app
 
   template:
     metadata:
       labels:
-        {{- include "bartweb.labels" . | nindent 8 }}
+        app: bartweb-app
 
     spec:
       securityContext:
         runAsUser: 1000
         runAsGroup: 1000
         fsGroup: 1000
-
-      {{- if .Values.imagePullSecrets }}
-      imagePullSecrets:
-        {{- toYaml .Values.imagePullSecrets | nindent 8 }}
-      {{- end }}
-
-      # ✅ FIX: prevent /usercase/log crash
-      initContainers:
-        - name: fix-permissions
-          image: busybox
-          command:
-            - sh
-            - -c
-            - |
-              mkdir -p /BARTweb/usercase/log
-              chmod -R 777 /BARTweb/usercase
-          volumeMounts:
-            - name: usercase-volume
-              mountPath: /BARTweb/usercase
+        fsGroupChangePolicy: "OnRootMismatch"
 
       containers:
-        - name: {{ .Chart.Name }}
-          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
-          imagePullPolicy: {{ .Values.image.pullPolicy }}
+        - name: bartweb
+          image: ghcr.io/zang-lab/bartweb_frontend:prod-0.0.5
+          imagePullPolicy: Always
 
           ports:
-            - name: http
-              containerPort: {{ .Values.service.targetPort }}
-
-          resources:
-            {{- toYaml .Values.resources | nindent 12 }}
+            - containerPort: 5000
 
           volumeMounts:
-            # App storage
             - name: usercase-volume
               mountPath: /BARTweb/usercase
 
-            # ✅ FIX: SSH key mount (was missing)
             - name: ssh-key-volume
               mountPath: /etc/ssh-key
               readOnly: true
 
+          resources:
+            limits:
+              cpu: "1"
+              memory: "2Gi"
+            requests:
+              cpu: "500m"
+              memory: "1Gi"
+
       volumes:
-        # PVC
-        {{- if .Values.usercase.usePVC }}
         - name: usercase-volume
           persistentVolumeClaim:
-            claimName: {{ .Values.usercase.pvcName }}
-        {{- else }}
-        - name: usercase-volume
-          hostPath:
-            path: {{ .Values.usercase.hostPath }}
-            type: DirectoryOrCreate
-        {{- end }}
+            claimName: bartweb-usercase-pvc
 
-        # SSH Secret
         - name: ssh-key-volume
           secret:
             secretName: cz3d-ssh-key
             defaultMode: 0400
-
-      nodeSelector:
-        {{- toYaml .Values.nodeSelector | nindent 8 }}
-
-      tolerations:
-        {{- toYaml .Values.tolerations | nindent 8 }}
-
-      affinity:
-        {{- toYaml .Values.affinity | nindent 8 }}
