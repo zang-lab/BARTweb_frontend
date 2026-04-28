@@ -4,15 +4,19 @@ metadata:
   name: {{ include "bartweb.fullname" . }}-app
   labels:
     {{- include "bartweb.labels" . | nindent 4 }}
+
 spec:
   replicas: {{ .Values.replicaCount }}
+
   selector:
     matchLabels:
       {{- include "bartweb.selectorLabels" . | nindent 6 }}
+
   template:
     metadata:
       labels:
         {{- include "bartweb.labels" . | nindent 8 }}
+
     spec:
       securityContext:
         runAsUser: 1000
@@ -23,6 +27,20 @@ spec:
       imagePullSecrets:
         {{- toYaml .Values.imagePullSecrets | nindent 8 }}
       {{- end }}
+
+      # ✅ FIX: prevent /usercase/log crash
+      initContainers:
+        - name: fix-permissions
+          image: busybox
+          command:
+            - sh
+            - -c
+            - |
+              mkdir -p /BARTweb/usercase/log
+              chmod -R 777 /BARTweb/usercase
+          volumeMounts:
+            - name: usercase-volume
+              mountPath: /BARTweb/usercase
 
       containers:
         - name: {{ .Chart.Name }}
@@ -37,10 +55,17 @@ spec:
             {{- toYaml .Values.resources | nindent 12 }}
 
           volumeMounts:
+            # App storage
             - name: usercase-volume
               mountPath: /BARTweb/usercase
 
+            # ✅ FIX: SSH key mount (was missing)
+            - name: ssh-key-volume
+              mountPath: /etc/ssh-key
+              readOnly: true
+
       volumes:
+        # PVC
         {{- if .Values.usercase.usePVC }}
         - name: usercase-volume
           persistentVolumeClaim:
@@ -51,6 +76,12 @@ spec:
             path: {{ .Values.usercase.hostPath }}
             type: DirectoryOrCreate
         {{- end }}
+
+        # SSH Secret
+        - name: ssh-key-volume
+          secret:
+            secretName: cz3d-ssh-key
+            defaultMode: 0400
 
       nodeSelector:
         {{- toYaml .Values.nodeSelector | nindent 8 }}

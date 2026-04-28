@@ -3,14 +3,19 @@ kind: CronJob
 metadata:
   name: bartweb-trigger-cronjob
   namespace: zanglab
+
 spec:
-  schedule: "0 * * * *"   # every hour
+  schedule: "0 * * * *"
 
   jobTemplate:
     spec:
       template:
         spec:
           restartPolicy: OnFailure
+
+          securityContext:
+            runAsUser: 1000
+            fsGroup: 1000
 
           containers:
             - name: bartweb-trigger-container
@@ -34,17 +39,18 @@ spec:
                   memory: 512Mi
 
               volumeMounts:
-                - name: usercase-volume
-                  mountPath: /BARTweb/usercase
+                - name: trigger-script
+                  mountPath: /BARTweb/usercase/trigger.py
+                  subPath: trigger.py
 
                 - name: ssh-key-volume
                   mountPath: /etc/ssh-key
                   readOnly: true
 
           volumes:
-            - name: usercase-volume
-              persistentVolumeClaim:
-                claimName: bartweb-usercase-pvc
+            - name: trigger-script
+              configMap:
+                name: bartweb-trigger-script
 
             - name: ssh-key-volume
               secret:
