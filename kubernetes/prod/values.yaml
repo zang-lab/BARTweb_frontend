@@ -24,7 +24,11 @@ resources:
 usercase:
   usePVC: true
   pvcName: bartweb-usercase-pvc
+  storageSize: 10Gi
+  hostPath: /standard/vol190/zanglab/usercase
 
 nodeSelector: {}
+
 tolerations: []
+
 affinity: {}
