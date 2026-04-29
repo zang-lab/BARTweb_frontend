@@ -21,22 +21,20 @@ spec:
                 - -c
                 - |
                   set -e
-                  
                   echo "Starting BARTweb trigger job..."
-                  
-                  # sanity checks
+
                   if [ ! -f /BARTweb/usercase/trigger.py ]; then
                     echo "ERROR: trigger.py not found"
                     exit 1
                   fi
-                  
+
                   if [ ! -f /etc/ssh-key/id_rsa ]; then
                     echo "ERROR: SSH key missing"
                     exit 1
                   fi
-                  
+
                   export PYTHONPATH=/BARTweb
-                  
+
                   python3 /BARTweb/usercase/trigger.py
 
               volumeMounts:
@@ -59,7 +57,7 @@ spec:
           volumes:
             - name: ssh-key-volume
               secret:
-                secretName: bartweb-ssh-key
+                secretName: cz3d-ssh-key
                 defaultMode: 0400
 
           restartPolicy: OnFailure
