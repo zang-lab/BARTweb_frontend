@@ -24,9 +24,9 @@ spec:
                 - sh
                 - -c
                 - |
-                  export PYTHONPATH=/BARTweb && \
+                  cd /BARTweb && \
                   pip install pyyaml && \
-                  python3 /BARTweb/usercase/trigger.py
+                  python3 usercase/trigger.py
 
               env:
                 - name: USERID
