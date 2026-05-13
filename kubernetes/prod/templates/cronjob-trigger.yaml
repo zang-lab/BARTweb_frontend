@@ -36,7 +36,7 @@ spec:
             - name: ssh-key-volume
               secret:
                 secretName: cz3d-ssh-key
-                defaultMode: 0400
+                defaultMode: 256
 
           restartPolicy: OnFailure
 
