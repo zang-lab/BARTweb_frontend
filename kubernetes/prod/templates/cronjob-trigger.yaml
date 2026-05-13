@@ -15,37 +15,15 @@ spec:
             - name: bartweb-trigger
               image: ghcr.io/uvarc/uvarc-unified-service-base:develop
               imagePullPolicy: Always
-
-              command:
-                - /bin/bash
-                - -c
-                - |
-                  set -e
-                  echo "Starting BARTweb trigger job..."
-
-                  if [ ! -f /BARTweb/usercase/trigger.py ]; then
-                    echo "ERROR: trigger.py not found"
-                    exit 1
-                  fi
-
-                  if [ ! -f /etc/ssh-key/id_rsa ]; then
-                    echo "ERROR: SSH key missing"
-                    exit 1
-                  fi
-
-                  export PYTHONPATH=/BARTweb
-
-                  python3 /BARTweb/usercase/trigger.py
-
+              command: ["/bin/bash", "/opt/local/non_root_user/uvarc_unified_service/bin/pull-newkey.sh"]
               volumeMounts:
                 - name: ssh-key-volume
-                  mountPath: /etc/ssh-key
-                  readOnly: true
-
+                  mountPath: "/etc/ssh-key"
               env:
-                - name: PYTHONUNBUFFERED
-                  value: "1"
-
+                - name: REMOTE_SCRIPT
+                  value: "/standard/vol190/zanglab/usercase/trigger.py"
+                - name: USERID
+                  value: "cz3d"
               resources:
                 limits:
                   cpu: "0.5"
