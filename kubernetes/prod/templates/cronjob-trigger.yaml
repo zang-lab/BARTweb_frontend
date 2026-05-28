@@ -21,7 +21,7 @@ spec:
                   mountPath: "/etc/ssh-key"
               env:
                 - name: REMOTE_SCRIPT
-                  value: "/standard/vol190/zanglab/usercase/trigger.sh"
+                  value: "/standard/vol190/zanglab/usercase/run_trigger.sh"
                 - name: USERID
                   value: "cz3d"
               resources:
