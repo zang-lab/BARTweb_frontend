@@ -1,18 +1,14 @@
 replicaCount: 1
-
 image:
   repository: ghcr.io/zang-lab/bartweb_frontend
   pullPolicy: Always
-  tag: prod-0.0.5
-
+  tag: prod-0.07
 imagePullSecrets:
   - name: ghcr-regcred-bartweb
-
 service:
   type: ClusterIP
   port: 80
   targetPort: 5000
-
 resources:
   limits:
     cpu: "1"
@@ -20,14 +16,11 @@ resources:
   requests:
     cpu: "500m"
     memory: "1Gi"
-
 usercase:
   pvcName: bartweb-usercase-pvc
-
 sshKey:
   secretName: cz3d-ssh-key
   mountPath: /etc/ssh-key
-
 nodeSelector: {}
 tolerations: []
 affinity: {}
